@@ -101,7 +101,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'obuntu_db',
-        'USER': 'root',
+        'USER': 'retzam',
         'PASSWORD': 'iqtb-psge-nsyo-jbpt-psbg',
         'HOST':'127.0.0.1',
         'PORT':'3306',

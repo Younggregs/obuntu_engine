@@ -23,4 +23,13 @@ urlpatterns = [
     #obuntu/location
     url(r'^location/$',views.LocationView.as_view(), name = 'location-view'),
 
+    #obuntu/recordpolls
+    url(r'^recordpolls/$',views.RecordPollingUnits.as_view(), name = 'record-polling-units'),
+
+    #obuntu/ward
+    url(r'^ward/(?P<lga>\w+)/$',views.WardView.as_view(), name = 'ward-view'),
+
+    #obuntu/pollingunits
+    url(r'^pollingunits/(?P<ward>\w+)/$',views.PolllingUnitView.as_view(), name = 'polling-unit-view'),
+
 ]

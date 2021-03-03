@@ -11,13 +11,17 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer
 
+import pandas as pd
+import os
+import os.path  
+import sys
+import csv
 
-
-
-
+#Static root
+PROJECT_ROOT = os.path.normpath(os.path.dirname(__file__))
 
 def authenticateLogin(request, username, password):
 
@@ -213,7 +217,7 @@ class AdminView(APIView):
         
         account = getAccount(request)
 
-        try:
+        if True:
             isSuperUser = Account.objects.get(id=account.id, isSuperUser=True)
             phone = request.POST.get("phone","")
 
@@ -232,8 +236,13 @@ class AdminView(APIView):
             name = request.POST.get("name","")
             password = request.POST.get("password","")
             lga = request.POST.get("lga","")
+            gender = request.POST.get("gender","")
+            pollingUnit = request.POST.get("pollingUnit", "")
+            hasVotersCard = request.POST.get("hasVotersCard", "")
+            email = request.POST.get("email","")
 
-            lgaObject = Lga.objects.get(id = lga)
+            lgaObject = Lga.objects.get(id = 3)
+            pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
 
             raw_password = password
             password = make_password(password)
@@ -250,6 +259,11 @@ class AdminView(APIView):
             admin.password = password
             admin.lga = lgaObject
             admin.isAdmin = True
+            admin.email = email
+            admin.gender = gender
+            admin.hasVotersCard = hasVotersCard
+            admin.lga = lgaObject
+            admin.pollingUnit = pollingUnitObject
             admin.save()
 
             superUserAdmin = SuperUserAdmin()
@@ -283,7 +297,7 @@ class AdminView(APIView):
             serializer = AdminSerializer(bucket, many=True)
             return Response(serializer.data)
 
-        except:
+        else:
             pass
 
         error_message = 'You are not authorised to carry out this task'
@@ -332,7 +346,7 @@ class UserView(APIView):
         
         account = getAccount(request)
 
-        try:
+        if True:
             isAdmin = Account.objects.get(id=account.id, isAdmin=True)
             phone = request.POST.get("phone","")
 
@@ -351,8 +365,13 @@ class UserView(APIView):
             name = request.POST.get("name","")
             password = request.POST.get("password","")
             lga = request.POST.get("lga","")
+            gender = request.POST.get("gender","")
+            pollingUnit = request.POST.get("pollingUnit", "")
+            hasVotersCard = request.POST.get("hasVotersCard", "")
+            email = request.POST.get("email","")
 
             lgaObject = Lga.objects.get(id = lga)
+            pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
 
             raw_password = password
             password = make_password(password)
@@ -363,12 +382,16 @@ class UserView(APIView):
             user.name = name
             user.save()
 
-            user = Account()
-            user.name = name
-            user.phone = phone
-            user.password = password
-            user.lga = lgaObject
-            user.save()
+            userAccount = Account()
+            userAccount.name = name
+            userAccount.phone = phone
+            userAccount.password = password
+            userAccount.email = email
+            userAccount.gender = gender
+            userAccount.hasVotersCard = hasVotersCard
+            userAccount.lga = lgaObject
+            userAccount.pollingUnit = pollingUnitObject
+            userAccount.save()
 
             adminUser = AdminUser()
             adminUser.user = user.id
@@ -396,7 +419,7 @@ class UserView(APIView):
             serializer = UserSerializer(bucket, many=True)
             return Response(serializer.data)
 
-        except:
+        else:
             pass
 
         error_message = 'You are not authorised to carry out this task'
@@ -433,3 +456,111 @@ class LocationView(APIView):
 
         serializer = LocationSerializer(bucket, many=True)
         return Response(serializer.data)
+
+
+
+
+
+class RecordPollingUnits(APIView):
+
+    def get(self, request):
+
+        url = PROJECT_ROOT + '/polling-units.csv'
+
+        with open(url) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            bucket = []
+
+            for row in csv_reader:
+
+                sn = row[0].lower()
+                state  = row[1].lower()
+                senatorialZone = row[2].lower()
+                lga = row[3].lower()
+                ward = row[4].lower()
+                pu = row[5].lower()
+                delimitation = row[6].lower()
+
+                try:
+
+                    wardObject = Ward.objects.get( name = ward)
+                    
+                    pollingUnit = PollingUnit()
+                    pollingUnit.ward = wardObject
+                    pollingUnit.name = pu
+                    pollingUnit.delimitation = delimitation
+                    pollingUnit.save()
+
+
+                except:
+
+                    try:
+                        lgaObject = Lga.objects.get(name = lga)
+
+                        wardObject = Ward()
+                        wardObject.name = ward
+                        wardObject.lga = lgaObject
+                        wardObject.save()
+
+                        pollingUnit = PollingUnit()
+                        pollingUnit.ward = wardObject
+                        pollingUnit.name = pu
+                        pollingUnit.delimitation = delimitation
+                        pollingUnit.save()
+
+                    except:
+                        pass
+
+                crate = {
+                    'lga': lga,
+                    'ward': ward,
+                    'pu': pu,
+                    'delimitation': delimitation
+                }
+
+                bucket.append(crate)
+
+        return Response(str(bucket))
+       
+       
+
+    def post(self, request):
+        pass
+
+
+
+
+
+
+
+
+
+
+class WardView(APIView):
+
+    def get(self, request, lga):
+
+        wardList = Ward.objects.filter(lga=lga)
+
+        serializer = WardSerializer(wardList, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request, lga):
+        pass
+
+
+
+class PolllingUnitView(APIView):
+
+    def get(self, request, ward):
+
+        pollingList = PollingUnit.objects.filter(ward=ward)
+
+        serializer = PollingUnitSerializer(pollingList, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request, lga):
+        pass
+

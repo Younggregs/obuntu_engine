@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account, Lga
+from .models import Account, Lga, Ward, PollingUnit
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -53,4 +53,18 @@ class LgaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Lga
+        fields = '__all__'
+
+
+class WardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Ward
+        fields = '__all__'
+
+
+class PollingUnitSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PollingUnit
         fields = '__all__'

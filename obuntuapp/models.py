@@ -28,11 +28,40 @@ class Lga(models.Model):
         ordering = ['-date']
 
 
+class Ward(models.Model):
+    lga = models.ForeignKey(Lga, on_delete=models.CASCADE)
+    name = models.CharField(max_length = 350)
+    date = models.DateTimeField(default = timezone.now)
+
+    def __str__(self):
+        return str(self.name)
+    
+    class Meta:
+        ordering = ['-date']
+
+
+class PollingUnit(models.Model):
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE)
+    name = models.CharField(max_length = 350)
+    delimitation = models.CharField(max_length = 50)
+    date = models.DateTimeField(default = timezone.now)
+
+    def __str__(self):
+        return str(self.name)
+    
+    class Meta:
+        ordering = ['-date']
+
+
+
 class Account(models.Model):
     lga = models.ForeignKey(Lga, on_delete=models.CASCADE, default=1)
+    pollingUnit = models.ForeignKey(PollingUnit, on_delete=models.CASCADE, default=1)
     name = models.CharField(max_length = 350)
     phone = models.CharField(max_length = 19)
     password = models.CharField(max_length = 350)
+    gender = models.CharField(max_length = 19, default='Male')
+    hasVotersCard = models.BooleanField(default=False)
     email = models.EmailField(default = '')
     isAdmin = models.BooleanField(default = False)
     isSuperUser = models.BooleanField(default = False)

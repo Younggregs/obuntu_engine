@@ -217,7 +217,7 @@ class AdminView(APIView):
         
         account = getAccount(request)
 
-        if True:
+        try:
             isSuperUser = Account.objects.get(id=account.id, isSuperUser=True)
             phone = request.POST.get("phone","")
 
@@ -297,7 +297,7 @@ class AdminView(APIView):
             serializer = AdminSerializer(bucket, many=True)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
         error_message = 'You are not authorised to carry out this task'
@@ -346,7 +346,7 @@ class UserView(APIView):
         
         account = getAccount(request)
 
-        if True:
+        try:
             isAdmin = Account.objects.get(id=account.id, isAdmin=True)
             phone = request.POST.get("phone","")
 
@@ -419,7 +419,7 @@ class UserView(APIView):
             serializer = UserSerializer(bucket, many=True)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
         error_message = 'You are not authorised to carry out this task'

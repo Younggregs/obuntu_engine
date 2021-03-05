@@ -167,6 +167,28 @@ class Login(APIView):
 
 
 
+
+
+
+class IsSuperUser(APIView):
+
+    def get(self, request):
+
+        try:
+            account = getAccount(request)
+            return Response(account.isSuperUser)
+        except:
+            pass
+
+        return Response(False)
+
+    def post(self, request):
+        pass
+
+
+
+
+
 class LgaView(APIView):
 
     def get(self, request):

@@ -11,6 +11,9 @@ urlpatterns = [
     #obuntu/login
     url(r'^login/$',views.Login.as_view(), name = 'login'),
 
+    #obuntu/superuser
+    url(r'^superuser/$',views.IsSuperUser.as_view(), name = 'is-superuser'),
+
     #obuntu/lgas
     url(r'^lgas/$',views.LgaView.as_view(), name = 'lga-view'),
 

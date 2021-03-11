@@ -263,7 +263,7 @@ class AdminView(APIView):
             hasVotersCard = request.POST.get("hasVotersCard", "")
             email = request.POST.get("email","")
 
-            lgaObject = Lga.objects.get(id = 3)
+            lgaObject = Lga.objects.get(id = lga)
             pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
 
             raw_password = password

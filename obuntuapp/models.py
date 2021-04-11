@@ -62,6 +62,7 @@ class Account(models.Model):
     image = models.FileField(default=None)
     phone = models.CharField(max_length = 19)
     password = models.CharField(max_length = 350)
+    notificationToken = models.CharField(max_length = 1000, default=None)
     gender = models.CharField(max_length = 19, default='')
     hasVotersCard = models.BooleanField(default=False)
     email = models.EmailField(default = '')

@@ -12,7 +12,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
 from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer
 
 import pandas as pd
 import os
@@ -139,7 +139,7 @@ class Login(APIView):
             account.save()
 
             serializer = AccountSerializer(account, many=False)
-           
+            return Response(serializer.data)
         
         else:
             pass
@@ -153,6 +153,79 @@ class Login(APIView):
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class Signin(APIView):
+
+    def get(self,request):
+        pass
+
+    def post(self,request):
+
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+
+            notificationToken = serializer.data['notificationToken']
+            phone = serializer.data['phone']
+            password = serializer.data['password']
+
+            try:
+                User.objects.get(username = phone)
+                account = Account.objects.get(phone = phone)
+                
+                status = authenticateLogin(request, phone, password)
+                
+                if status : 
+                    serializer = AccountSerializer(account, many=False)
+                    return Response(serializer.data)
+
+                else:
+
+                    error_message = 'Oops login details do not match'
+                    err = {
+                        'error_message' : error_message
+                    }
+
+                    serializer = ErrorCheckSerializer( err, many=False)
+                    return Response(serializer.data)
+
+            except:
+                pass
+
+            error_message = 'Oops login details do not match'
+            err = {
+                'error_message' : error_message
+            }
+
+            serializer = ErrorCheckSerializer( err, many=False)
+            return Response(serializer.data)
+        
+        else:
+            pass
+    
+        error_message = 'Sorry could not complete process, reload page and try again'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
 
 
 
@@ -190,6 +263,7 @@ class Signup(APIView):
             except:
                 pass
 
+            notificationToken = request.POST.get("notificationToken", "")
             name = request.POST.get("name","")
             password = request.POST.get("password","")
             lga = request.POST.get("lga","")
@@ -211,6 +285,7 @@ class Signup(APIView):
             userAccount.name = name
             userAccount.phone = phone
             userAccount.password = password
+            userAccount.notificationToken = notificationToken
             userAccount.username = name
             userAccount.lga = lgaObject
             userAccount.pollingUnit = pollingUnitObject
@@ -284,7 +359,7 @@ class UpdateAccount(APIView):
 
     def post(self, request):
         
-        if True:
+        try:
             name = request.POST.get("name", False)
             image = request.FILES.get("image", False)
             email = request.POST.get("email", False)
@@ -333,7 +408,7 @@ class UpdateAccount(APIView):
             serializer = UpdateSerializer(buffer, many=False)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
         error_message = 'Sorry something went wrong, retry'
@@ -992,7 +1067,7 @@ class CommentView(APIView):
     
     def get(self, request, id):
         
-        if True:
+        try:
             commentList = Comment.objects.filter(post = id)
 
             bucket = []
@@ -1015,7 +1090,7 @@ class CommentView(APIView):
             serializer = CommentSerializer(bucket, many=True)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
 
@@ -1031,7 +1106,7 @@ class CommentView(APIView):
     
     def post(self, request, id):
         
-        if True:
+        try:
             #account = getAccount(request)
             account = Account.objects.get(id = 1)
             post = Post.objects.get(id = id)
@@ -1055,7 +1130,7 @@ class CommentView(APIView):
             serializer = CommentSerializer(buffer, many = False)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
 

@@ -11,6 +11,9 @@ urlpatterns = [
     #obuntu/login
     url(r'^login/$',views.Login.as_view(), name = 'login'),
 
+    #obuntu/signin
+    url(r'^signin/$',views.Signin.as_view(), name = 'signin'),
+
     #obuntu/signup
     url(r'^signup/$',views.Signup.as_view(), name = 'signup'),
 

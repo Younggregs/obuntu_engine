@@ -16,6 +16,13 @@ class NewAccountSerializer(serializers.ModelSerializer):
         fields = ['phone','name','password']
 
 
+class LoginSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Account
+        fields = ['phone','password','notificationToken']
+
+
 
 class UserSearchSerializer(serializers.Serializer):
 

@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!84ox8k($ex6(a26k^u5pmm(io#0+$p)_sz3%i&tz6l_j=^b#o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -103,7 +103,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'obuntu_db',
-        'USER': 'retzam',
+        'USER': 'root',
         'PASSWORD': 'iqtb-psge-nsyo-jbpt-psbg',
         'HOST':'127.0.0.1',
         'PORT':'3306',

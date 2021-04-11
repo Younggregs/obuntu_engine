@@ -11,6 +11,9 @@ urlpatterns = [
     #obuntu/login
     url(r'^login/$',views.Login.as_view(), name = 'login'),
 
+    #obuntu/signup
+    url(r'^signup/$',views.Signup.as_view(), name = 'signup'),
+
     #obuntu/superuser
     url(r'^superuser/$',views.IsSuperUser.as_view(), name = 'is-superuser'),
 
@@ -30,9 +33,34 @@ urlpatterns = [
     url(r'^recordpolls/$',views.RecordPollingUnits.as_view(), name = 'record-polling-units'),
 
     #obuntu/ward
-    url(r'^ward/(?P<lga>\w+)/$',views.WardView.as_view(), name = 'ward-view'),
+    url(r'^ward/(?P<lga>[0-9]+)$',views.WardView.as_view(), name = 'ward-view'),
 
     #obuntu/pollingunits
-    url(r'^pollingunits/(?P<ward>\w+)/$',views.PolllingUnitView.as_view(), name = 'polling-unit-view'),
+    url(r'^pollingunits/(?P<ward>[0-9]+)/$',views.PolllingUnitView.as_view(), name = 'polling-unit-view'),
+
+    #obuntu/post
+    url(r'^post/$',views.PostView.as_view(), name = 'post-view'),
+
+    #obuntu/update_post
+    url(r'^update_post(?P<id>[0-9]+)/$',views.UpdatePost.as_view(), name = 'update-post'),
+
+    #obuntu/like_post
+    url(r'^like_post/(?P<id>[0-9]+)/$',views.LikePost.as_view(), name = 'like-post'),
+
+    #obuntu/comment
+    url(r'^comment/(?P<id>[0-9]+)/$',views.CommentView.as_view(), name = 'comment-view'),
+
+    #obuntu/remove_comment
+    url(r'^remove_comment/(?P<id>[0-9]+)/$',views.RemoveComment.as_view(), name = 'remove-comment'),
+
+    #obuntu/follow
+    url(r'^follow/(?P<id>[0-9]+)/$',views.FollowView.as_view(), name = 'follow-view'),
+
+    #obuntu/update_account
+    url(r'^update_account/$',views.UpdateAccount.as_view(), name = 'update-account'),
+
+    #obuntu/user_search
+    url(r'^user_search/$',views.UserSearch.as_view(), name = 'user-search'),
+    
 
 ]

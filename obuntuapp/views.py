@@ -11,8 +11,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer
 
 import pandas as pd
 import os
@@ -163,6 +163,198 @@ class Login(APIView):
         }
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
+
+
+
+
+
+
+
+class Signup(APIView):
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        
+        try:
+            phone = request.POST.get("phone","")
+
+            try:
+                accountExist = Account.objects.get(phone=phone)
+
+                error_message = 'Account with this phone id already exist'
+                err = {
+                    'error_message' : error_message
+                }
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+            except:
+                pass
+
+            name = request.POST.get("name","")
+            password = request.POST.get("password","")
+            lga = request.POST.get("lga","")
+            pollingUnit = request.POST.get("pollingUnit", "")
+
+            lgaObject = Lga.objects.get(id = lga)
+            pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
+
+            raw_password = password
+            password = make_password(password)
+            
+            user = User()
+            user.username = phone
+            user.password = password
+            user.name = name
+            user.save()
+
+            userAccount = Account()
+            userAccount.name = name
+            userAccount.phone = phone
+            userAccount.password = password
+            userAccount.username = name
+            userAccount.lga = lgaObject
+            userAccount.pollingUnit = pollingUnitObject
+            userAccount.save()
+
+            return Response(name)
+
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class UpdateAccount(APIView):
+
+    def get(self, request):
+        
+        try:
+            #userAccount = getAccount(request)
+            userAccount = Account.objects.get(id = 1)
+
+            lgaObject = Lga.objects.get(id = userAccount.lga_id)
+            pollingUnitObject = PollingUnit.objects.get(id = userAccount.pollingUnit_id)
+
+            buffer = {
+                'lga': lgaObject.name,
+                'pollingUnit': pollingUnitObject.name,
+                'name': userAccount.name,
+                'username': userAccount.username,
+                'image': userAccount.image,
+                'email': userAccount.email,
+                'gender': userAccount.gender,
+                'hasVotersCard': userAccount.hasVotersCard
+            }
+
+            serializer = UpdateSerializer(buffer, many=False)
+            return Response(serializer.data)
+        
+        except:
+            pass
+
+            
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+    def post(self, request):
+        
+        if True:
+            name = request.POST.get("name", False)
+            image = request.FILES.get("image", False)
+            email = request.POST.get("email", False)
+            gender = request.POST.get("gender", False)
+            hasVotersCard = request.POST.get("hasVotersCard", False)
+            username = request.POST.get("username", False)
+            lga = request.POST.get("lga", False)
+            pollingUnit = request.POST.get("pollingUnit", False)
+
+            
+            userAccount = Account.objects.get(id = 1)
+            if name:
+                userAccount.name = name
+            if username:
+                userAccount.username = username
+            if lga:
+                lgaObject = Lga.objects.get(id = lga)
+                userAccount.lga = lgaObject
+            if pollingUnit:
+                pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
+                userAccount.pollingUnit = pollingUnitObject
+            if email:
+                userAccount.email = email
+            if gender:
+                userAccount.gender = gender
+            if image:
+                userAccount.image = image
+            if hasVotersCard:
+                userAccount.hasVotersCard = hasVotersCard
+            userAccount.save()
+
+            lgaObject = Lga.objects.get(id = userAccount.lga_id)
+            pollingUnitObject = PollingUnit.objects.get(id = userAccount.pollingUnit_id)
+
+            buffer = {
+                'lga': lgaObject.name,
+                'pollingUnit': pollingUnitObject.name,
+                'name': userAccount.name,
+                'username': userAccount.username,
+                'image': userAccount.image,
+                'email': userAccount.email,
+                'gender': userAccount.gender,
+                'hasVotersCard': userAccount.hasVotersCard
+            }
+
+            serializer = UpdateSerializer(buffer, many=False)
+            return Response(serializer.data)
+
+        else:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -365,10 +557,9 @@ class UserView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        
-        account = getAccount(request)
 
         try:
+            account = getAccount(request)
             isAdmin = Account.objects.get(id=account.id, isAdmin=True)
             phone = request.POST.get("phone","")
 
@@ -586,3 +777,447 @@ class PolllingUnitView(APIView):
     def post(self, request, lga):
         pass
 
+
+
+
+
+
+
+
+
+class PostView(APIView):
+
+    def get(self, request):
+        
+        postList = Post.objects.all()
+
+        bucket = []
+        for post in postList:
+
+            account = Account.objects.get(id = post.account_id)
+            #updated = PostUpdate.objects.get(post = post.id)
+
+            buffer = {
+                'post_id': post.id,
+                'title': post.title,
+                'body': post.body,
+                'image': post.image,
+                'updated': post.date,
+                'date': post.date,
+                'user_id': account.id,
+                'user_name': account.name
+            }
+
+            bucket.append(buffer)
+
+        
+        serializer = PostSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        
+        try:
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
+            title = request.POST.get("title","")
+            body = request.POST.get("body","")
+            image = request.FILES.get("image",False)
+
+            post = Post()
+            post.account = account
+            post.title = title
+            if image:
+                post.image = image
+            post.body = body
+            post.save()
+
+            register = {
+                'post_id': post.id,
+                'title': post.title,
+                'body': post.body,
+                'image': post.image,
+                'updated': post.date,
+                'date': post.date,
+                'user_id': account.id,
+                'user_name': account.name
+            }
+
+            serializer = PostSerializer(register, many=False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+class UpdatePost(APIView):
+
+    def get(self, request, id):
+        
+        try:
+            account = Account.objects.get(id = 1)
+            post = Post.objects.get(id = id)
+            post.delete()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+    def post(self, request, id):
+        
+        try:
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
+            title = request.POST.get("title","")
+            body = request.POST.get("body","")
+            image = request.FILES.get("image",False)
+
+            post = Post()
+            post.account = account
+            post.title = title
+            if image:
+                post.image = image
+            post.body = body
+            post.save()
+
+            register = {
+                'post_id': post.id,
+                'title': post.title,
+                'body': post.body,
+                'image': post.image,
+                'updated': post.date,
+                'date': post.date,
+                'user_id': account.id,
+                'user_name': account.name
+            }
+
+            serializer = PostSerializer(register, many=False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+class LikePost(APIView):
+
+    def get(self, request, id):
+        
+        try:
+            account = Account.objects.get(id = 1)
+            post = Post.objects.get(id = id)
+            try:
+                like = Like.objects.get(post_id = id, account=account)
+                like.delete()
+
+                code = 7
+                success = {
+                    'code' : code
+                }
+
+                serializer = SuccessCodeSerializer(success, many = False)
+                return Response(serializer.data)
+
+            except:
+                pass
+
+            like = Like()
+            like.account = account
+            like.post = post
+            like.save()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+        
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+class CommentView(APIView):
+    
+    def get(self, request, id):
+        
+        if True:
+            commentList = Comment.objects.filter(post = id)
+
+            bucket = []
+            for comment in commentList:
+
+                account = Account.objects.get(id = comment.account_id)
+                #updated = PostUpdate.objects.get(post = post.id)
+
+                buffer = {
+                    'comment_id': comment.id,
+                    'text': comment.text,
+                    'date': comment.date,
+                    'user_id': account.id,
+                    'user_name': account.name
+                }
+
+                bucket.append(buffer)
+
+        
+            serializer = CommentSerializer(bucket, many=True)
+            return Response(serializer.data)
+
+        else:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+        
+
+    
+    def post(self, request, id):
+        
+        if True:
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
+            post = Post.objects.get(id = id)
+
+            text = request.POST.get("text","")
+
+            comment = Comment()
+            comment.account = account
+            comment.post = post
+            comment.text = text
+            comment.save()
+
+            buffer = {
+                'comment_id': comment.id,
+                'text': comment.text,
+                'date': comment.date,
+                'user_id': account.id,
+                'user_name': account.name
+            }
+
+            serializer = CommentSerializer(buffer, many = False)
+            return Response(serializer.data)
+
+        else:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+class RemoveComment(APIView):
+
+    def get(self, request, id):
+        
+        try: 
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
+            comment = Comment.objects.get(id = id, account=account)
+            comment.delete()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+        
+
+    def post(self, request, id):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class FollowView(APIView):
+
+    def get(self, request, id):
+        
+        try:
+            account = Account.objects.get(id = 1)
+            following = Account.objects.get(id = id)
+            try:
+                follow = Follow.objects.get(account=account.id, following = following)
+                follow.delete()
+
+                code = 7
+                success = {
+                    'code' : code
+                }
+
+                serializer = SuccessCodeSerializer(success, many = False)
+                return Response(serializer.data)
+
+            except:
+                pass
+
+            follow = Follow()
+            follow.account = account.id
+            follow.following = following
+            follow.save()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+        
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+class UserSearch(APIView):
+
+    def get(self, request):
+        
+        try:
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
+            userList = Account.objects.all()
+
+            bucket = []
+            for user in userList:
+                
+                follow = False
+                try:
+                    follow = Follow.objects.get(following= user.id, account=account.id)
+                    follow = True
+                except:
+                    pass
+
+                buffer = {
+                    'id': user.id,
+                    'name': user.name,
+                    'username': user.username,
+                    'isFollowing': follow
+                }
+
+                bucket.append(buffer)
+
+            serializer = UserSearchSerializer(bucket, many=True)
+            return Response(serializer.data)
+
+
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        pass

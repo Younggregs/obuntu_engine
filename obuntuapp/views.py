@@ -91,17 +91,12 @@ class Login(APIView):
             try:
 
                 User.objects.get(username = phone)
-                Account.objects.get(phone = phone)
+                account = Account.objects.get(phone = phone)
                 
                 status = authenticateLogin(request, phone, password)
                 
                 if status : 
-                    code = phone
-                    success = {
-                        'code' : code
-                    }
-
-                    serializer = SuccessCodeSerializer(success, many = False)
+                    serializer = AccountSerializer(account, many=False)
                     return Response(serializer.data)
 
                 else:
@@ -143,15 +138,7 @@ class Login(APIView):
             account.password = password
             account.save()
 
-            code = phone
-
-            success = {
-                'code' : code
-            }
-
-            serializer = SuccessCodeSerializer(success , many = False)
-
-            return Response(serializer.data)
+            serializer = AccountSerializer(account, many=False)
            
         
         else:
@@ -163,6 +150,17 @@ class Login(APIView):
         }
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -218,7 +216,8 @@ class Signup(APIView):
             userAccount.pollingUnit = pollingUnitObject
             userAccount.save()
 
-            return Response(name)
+            serializer = AccountSerializer(userAccount, many=False)
+            return Response(serializer.data)
 
         except:
             pass

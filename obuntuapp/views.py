@@ -968,16 +968,18 @@ class UpdatePost(APIView):
         
         try:
             account = getAccount(request)
-            title = request.POST.get("title","")
-            body = request.POST.get("body","")
-            image = request.FILES.get("image",False)
+            title = request.POST.get("title", False)
+            body = request.POST.get("body", False)
+            image = request.FILES.get("image", False)
 
             post = Post()
             post.account = account
-            post.title = title
+            if title:
+                post.title = title
             if image:
                 post.image = image
-            post.body = body
+            if body:
+                post.body = body
             post.save()
 
             register = {

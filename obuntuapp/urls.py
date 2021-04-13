@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^post/$',views.PostView.as_view(), name = 'post-view'),
 
     #obuntu/update_post
-    url(r'^update_post(?P<id>[0-9]+)/$',views.UpdatePost.as_view(), name = 'update-post'),
+    url(r'^update_post/(?P<id>[0-9]+)/$',views.UpdatePost.as_view(), name = 'update-post'),
 
     #obuntu/like_post
     url(r'^like_post/(?P<id>[0-9]+)/$',views.LikePost.as_view(), name = 'like-post'),

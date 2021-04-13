@@ -179,8 +179,9 @@ class Signin(APIView):
 
     def post(self,request):
 
+
         phone = request.POST.get("phone","")
-        password = request.POST.get("notificationToken","")
+        password = request.POST.get("password","")
         notificationToken = request.POST.get("notificationToken","")
 
         try:
@@ -190,12 +191,13 @@ class Signin(APIView):
             status = authenticateLogin(request, phone, password)
             
             if status : 
+                account.notificationToken = notificationToken
                 serializer = AccountSerializer(account, many=False)
                 return Response(serializer.data)
 
             else:
 
-                error_message = 'Oops login details do not match'
+                error_message = 'Login details do not match'
                 err = {
                     'error_message' : error_message
                 }
@@ -206,7 +208,7 @@ class Signin(APIView):
         except:
             pass
 
-        error_message = 'Oops login details do not match'
+        error_message = 'Sorry login details do not match'
         err = {
             'error_message' : error_message
         }

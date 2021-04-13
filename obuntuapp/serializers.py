@@ -23,7 +23,6 @@ class LoginSerializer(serializers.ModelSerializer):
         fields = ['phone','password','notificationToken']
 
 
-
 class UserSearchSerializer(serializers.Serializer):
 
     id = serializers.IntegerField()

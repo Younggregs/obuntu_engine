@@ -972,7 +972,7 @@ class UpdatePost(APIView):
             body = request.POST.get("body", False)
             image = request.FILES.get("image", False)
 
-            post = Post()
+            post = Post.objects.get(id = id)
             post.account = account
             if title:
                 post.title = title

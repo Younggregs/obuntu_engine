@@ -179,40 +179,51 @@ class Signin(APIView):
 
     def post(self,request):
 
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
 
-        phone = request.POST.get("phone","")
-        password = request.POST.get("password","")
-        notificationToken = request.POST.get("notificationToken","")
+            notificationToken = serializer.data['notificationToken']
+            phone = serializer.data['phone']
+            password = serializer.data['password']
 
-        try:
-            User.objects.get(username = phone)
-            account = Account.objects.get(phone = phone)
-            
-            status = authenticateLogin(request, phone, password)
-            
-            if status : 
-                account.notificationToken = notificationToken
-                serializer = AccountSerializer(account, many=False)
-                return Response(serializer.data)
+            try:
+                User.objects.get(username = phone)
+                account = Account.objects.get(phone = phone)
+                
+                status = authenticateLogin(request, phone, password)
+                
+                if status : 
+                    serializer = AccountSerializer(account, many=False)
+                    return Response(serializer.data)
 
-            else:
+                else:
 
-                error_message = 'Login details do not match'
-                err = {
-                    'error_message' : error_message
-                }
+                    error_message = 'Oops login details do not match'
+                    err = {
+                        'error_message' : error_message
+                    }
 
-                serializer = ErrorCheckSerializer( err, many=False)
-                return Response(serializer.data)
+                    serializer = ErrorCheckSerializer( err, many=False)
+                    return Response(serializer.data)
 
-        except:
+            except:
+                pass
+
+            error_message = 'Oops login details do not match'
+            err = {
+                'error_message' : error_message
+            }
+
+            serializer = ErrorCheckSerializer( err, many=False)
+            return Response(serializer.data)
+        
+        else:
             pass
-
-        error_message = 'Sorry login details do not match'
+    
+        error_message = 'Sorry could not complete process, reload page and try again'
         err = {
             'error_message' : error_message
         }
-
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
 

@@ -324,8 +324,7 @@ class UpdateAccount(APIView):
     def get(self, request):
         
         try:
-            #userAccount = getAccount(request)
-            userAccount = Account.objects.get(id = 1)
+            userAccount = getAccount(request)
 
             lgaObject = Lga.objects.get(id = userAccount.lga_id)
             pollingUnitObject = PollingUnit.objects.get(id = userAccount.pollingUnit_id)
@@ -370,7 +369,7 @@ class UpdateAccount(APIView):
             pollingUnit = request.POST.get("pollingUnit", False)
 
             
-            userAccount = Account.objects.get(id = 1)
+            userAccount = getAccount(request)
             if name:
                 userAccount.name = name
             if username:
@@ -892,8 +891,7 @@ class PostView(APIView):
     def post(self, request):
         
         try:
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             title = request.POST.get("title","")
             body = request.POST.get("body","")
             image = request.FILES.get("image",False)
@@ -942,7 +940,7 @@ class UpdatePost(APIView):
     def get(self, request, id):
         
         try:
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             post = Post.objects.get(id = id)
             post.delete()
 
@@ -969,8 +967,7 @@ class UpdatePost(APIView):
     def post(self, request, id):
         
         try:
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             title = request.POST.get("title","")
             body = request.POST.get("body","")
             image = request.FILES.get("image",False)
@@ -1018,7 +1015,7 @@ class LikePost(APIView):
     def get(self, request, id):
         
         try:
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             post = Post.objects.get(id = id)
             try:
                 like = Like.objects.get(post_id = id, account=account)
@@ -1107,8 +1104,7 @@ class CommentView(APIView):
     def post(self, request, id):
         
         try:
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             post = Post.objects.get(id = id)
 
             text = request.POST.get("text","")
@@ -1151,8 +1147,7 @@ class RemoveComment(APIView):
     def get(self, request, id):
         
         try: 
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             comment = Comment.objects.get(id = id, account=account)
             comment.delete()
 
@@ -1203,7 +1198,7 @@ class FollowView(APIView):
     def get(self, request, id):
         
         try:
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             following = Account.objects.get(id = id)
             try:
                 follow = Follow.objects.get(account=account.id, following = following)
@@ -1255,8 +1250,7 @@ class UserSearch(APIView):
     def get(self, request):
         
         try:
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             userList = Account.objects.all()
 
             bucket = []

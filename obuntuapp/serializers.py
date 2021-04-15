@@ -97,6 +97,8 @@ class PostSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()
     user_name = serializers.CharField()
     title = serializers.CharField()
+    comments = serializers.IntegerField()
+    likes = serializers.IntegerField()
     body = serializers.CharField()
     image = serializers.CharField()
     updated = serializers.CharField()

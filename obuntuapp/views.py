@@ -870,6 +870,9 @@ class PostView(APIView):
             account = Account.objects.get(id = post.account_id)
             #updated = PostUpdate.objects.get(post = post.id)
 
+            comments = Comment.objects.filter(id = post.id).count()
+            likes = Like.objects.filter(id = post.id).count()
+
             buffer = {
                 'post_id': post.id,
                 'title': post.title,
@@ -878,7 +881,9 @@ class PostView(APIView):
                 'updated': post.date,
                 'date': post.date,
                 'user_id': account.id,
-                'user_name': account.name
+                'user_name': account.name,
+                'comments': comments,
+                'likes': likes
             }
 
             bucket.append(buffer)
@@ -912,7 +917,9 @@ class PostView(APIView):
                 'updated': post.date,
                 'date': post.date,
                 'user_id': account.id,
-                'user_name': account.name
+                'user_name': account.name,
+                'comments': 0,
+                'likes': 0
             }
 
             serializer = PostSerializer(register, many=False)
@@ -982,6 +989,9 @@ class UpdatePost(APIView):
                 post.body = body
             post.save()
 
+            comments = Comment.objects.filter(id = post.id).count()
+            likes = Like.objects.filter(id = post.id).count()
+
             register = {
                 'post_id': post.id,
                 'title': post.title,
@@ -990,7 +1000,9 @@ class UpdatePost(APIView):
                 'updated': post.date,
                 'date': post.date,
                 'user_id': account.id,
-                'user_name': account.name
+                'user_name': account.name,
+                'comments': comments,
+                'likes': likes
             }
 
             serializer = PostSerializer(register, many=False)
@@ -1057,7 +1069,28 @@ class LikePost(APIView):
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
 
+    
+    def post(self, request, id):
 
+        try:
+            likeList = Like.objects.filter(id = id).count()
+
+            success = {
+                'code' : likeList
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+        error_message = 'Could not fetch likes'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
 
 
 
@@ -1093,7 +1126,7 @@ class CommentView(APIView):
             pass
 
 
-        error_message = 'Sorry something went wrong, retry'
+        error_message = 'Sorry could not fetch comments'
         err = {
             'error_message' : error_message
         }

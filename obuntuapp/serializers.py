@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account, Lga, Ward, PollingUnit
+from .models import Account, Lga, Ward, PollingUnit, Like
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -91,21 +91,6 @@ class PollingUnitSerializer(serializers.ModelSerializer):
 
 
 
-
-class PostSerializer(serializers.Serializer):
-    post_id = serializers.IntegerField()
-    user_id = serializers.IntegerField()
-    user_name = serializers.CharField()
-    title = serializers.CharField()
-    comments = serializers.IntegerField()
-    likes = serializers.IntegerField()
-    body = serializers.CharField()
-    image = serializers.CharField()
-    updated = serializers.CharField()
-    date = serializers.CharField()
-
-
-
 class CommentSerializer(serializers.Serializer):
     comment_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
@@ -115,5 +100,22 @@ class CommentSerializer(serializers.Serializer):
 
 
 
-class LikeSerializer(serializers.Serializer):
+class LikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Like
+        fields = ['account_id']
+
+
+
+class PostSerializer(serializers.Serializer):
+    post_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
+    user_name = serializers.CharField()
+    title = serializers.CharField()
+    comments = CommentSerializer(many=True)
+    likes = LikeSerializer(many=True)
+    body = serializers.CharField()
+    image = serializers.CharField()
+    updated = serializers.CharField()
+    date = serializers.CharField()

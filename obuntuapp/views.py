@@ -870,8 +870,25 @@ class PostView(APIView):
             account = Account.objects.get(id = post.account_id)
             #updated = PostUpdate.objects.get(post = post.id)
 
-            comments = Comment.objects.filter(id = post.id).count()
-            likes = Like.objects.filter(id = post.id).count()
+            comments = Comment.objects.filter(post_id = post.id)
+            likes = Like.objects.filter(post_id = post.id)
+
+
+            commentBucket = []
+            for comment in comments:
+
+                account = Account.objects.get(id = comment.account_id)
+
+                buffer = {
+                    'comment_id': comment.id,
+                    'text': comment.text,
+                    'date': comment.date,
+                    'user_id': account.id,
+                    'user_name': account.name
+                }
+
+                commentBucket.append(buffer)
+
 
             buffer = {
                 'post_id': post.id,
@@ -882,7 +899,7 @@ class PostView(APIView):
                 'date': post.date,
                 'user_id': account.id,
                 'user_name': account.name,
-                'comments': comments,
+                'comments': commentBucket,
                 'likes': likes
             }
 
@@ -935,6 +952,14 @@ class PostView(APIView):
         }
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
+
+
+
+
+
+
+
+
 
 
 

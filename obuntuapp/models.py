@@ -64,6 +64,7 @@ class Account(models.Model):
     password = models.CharField(max_length = 350)
     notificationToken = models.CharField(max_length = 1000, default=None)
     gender = models.CharField(max_length = 19, default='')
+    about = models.CharField(max_length = 150, default='')
     hasVotersCard = models.BooleanField(default=False)
     email = models.EmailField(default = '')
     isAdmin = models.BooleanField(default = False)

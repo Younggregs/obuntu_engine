@@ -40,6 +40,7 @@ class UpdateSerializer(serializers.Serializer):
     gender = serializers.CharField()
     hasVotersCard = serializers.BooleanField()
     email = serializers.CharField()
+    about = serializers.CharField()
 
 class AdminSerializer(serializers.Serializer):
     isSuperUser = serializers.BooleanField()

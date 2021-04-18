@@ -336,6 +336,7 @@ class UpdateAccount(APIView):
                 'username': userAccount.username,
                 'image': userAccount.image,
                 'email': userAccount.email,
+                'about': userAccount.about,
                 'gender': userAccount.gender,
                 'hasVotersCard': userAccount.hasVotersCard
             }
@@ -358,10 +359,11 @@ class UpdateAccount(APIView):
 
     def post(self, request):
         
-        try:
+        if True:
             name = request.POST.get("name", False)
             image = request.FILES.get("image", False)
             email = request.POST.get("email", False)
+            about = request.POST.get("about", False)
             gender = request.POST.get("gender", False)
             hasVotersCard = request.POST.get("hasVotersCard", False)
             username = request.POST.get("username", False)
@@ -370,6 +372,7 @@ class UpdateAccount(APIView):
 
             
             userAccount = getAccount(request)
+            #userAccount = Account.objects.get(id = 1)
             if name:
                 userAccount.name = name
             if username:
@@ -382,6 +385,8 @@ class UpdateAccount(APIView):
                 userAccount.pollingUnit = pollingUnitObject
             if email:
                 userAccount.email = email
+            if about:
+                userAccount.about = about
             if gender:
                 userAccount.gender = gender
             if image:
@@ -400,6 +405,7 @@ class UpdateAccount(APIView):
                 'username': userAccount.username,
                 'image': userAccount.image,
                 'email': userAccount.email,
+                'about': userAccount.about,
                 'gender': userAccount.gender,
                 'hasVotersCard': userAccount.hasVotersCard
             }
@@ -407,7 +413,7 @@ class UpdateAccount(APIView):
             serializer = UpdateSerializer(buffer, many=False)
             return Response(serializer.data)
 
-        except:
+        else:
             pass
 
         error_message = 'Sorry something went wrong, retry'

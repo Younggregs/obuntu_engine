@@ -926,7 +926,7 @@ class PostView(APIView):
             post.body = body
             post.save()
 
-            register = {
+            bucket = {
                 'post_id': post.id,
                 'title': post.title,
                 'body': post.body,
@@ -935,11 +935,11 @@ class PostView(APIView):
                 'date': post.date,
                 'user_id': account.id,
                 'user_name': account.name,
-                'comments': 0,
-                'likes': 0
+                'comments': [],
+                'likes': []
             }
-
-            serializer = PostSerializer(register, many=False)
+            
+            serializer = PostSerializer(bucket, many=False)
             return Response(serializer.data)
 
         except:
@@ -1164,7 +1164,8 @@ class CommentView(APIView):
     def post(self, request, id):
         
         try:
-            account = getAccount(request)
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
             post = Post.objects.get(id = id)
 
             text = request.POST.get("text","")
@@ -1175,15 +1176,26 @@ class CommentView(APIView):
             comment.text = text
             comment.save()
 
-            buffer = {
-                'comment_id': comment.id,
-                'text': comment.text,
-                'date': comment.date,
-                'user_id': account.id,
-                'user_name': account.name
-            }
+            commentList = Comment.objects.filter(post = id)
 
-            serializer = CommentSerializer(buffer, many = False)
+            bucket = []
+            for comment in commentList:
+
+                account = Account.objects.get(id = comment.account_id)
+                #updated = PostUpdate.objects.get(post = post.id)
+
+                buffer = {
+                    'comment_id': comment.id,
+                    'text': comment.text,
+                    'date': comment.date,
+                    'user_id': account.id,
+                    'user_name': account.name
+                }
+
+                bucket.append(buffer)
+
+        
+            serializer = CommentSerializer(bucket, many=True)
             return Response(serializer.data)
 
         except:

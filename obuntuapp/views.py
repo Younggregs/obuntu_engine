@@ -359,7 +359,7 @@ class UpdateAccount(APIView):
 
     def post(self, request):
         
-        if True:
+        try:
             name = request.POST.get("name", False)
             image = request.FILES.get("image", False)
             email = request.POST.get("email", False)
@@ -413,7 +413,7 @@ class UpdateAccount(APIView):
             serializer = UpdateSerializer(buffer, many=False)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
         error_message = 'Sorry something went wrong, retry'

@@ -1164,8 +1164,7 @@ class CommentView(APIView):
     def post(self, request, id):
         
         try:
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
             post = Post.objects.get(id = id)
 
             text = request.POST.get("text","")

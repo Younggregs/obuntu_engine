@@ -64,6 +64,9 @@ urlpatterns = [
 
     #obuntu/user_search
     url(r'^user_search/$',views.UserSearch.as_view(), name = 'user-search'),
+
+    #obuntu/video_category
+    url(r'^video_category/$',views.VideoCategoryView.as_view(), name = 'video-category-view'),
     
 
 ]

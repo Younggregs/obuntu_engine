@@ -157,3 +157,30 @@ class Follow(models.Model):
 
     class Meta:
         ordering = ['-date']
+
+
+
+class VideoCategory(models.Model):
+    name = models.CharField(max_length = 150, default='')
+    date = models.DateTimeField(default = timezone.now)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        ordering = ['-date']
+
+
+
+class Video(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, default=1)
+    category = models.ForeignKey(VideoCategory, on_delete=models.CASCADE, default=1)
+    title = models.CharField(max_length = 150, default='')
+    video = models.FileField(default=None)
+    date = models.DateTimeField(default = timezone.now)
+
+    def __str__(self):
+        return str(self.title)
+
+    class Meta:
+        ordering = ['-date']

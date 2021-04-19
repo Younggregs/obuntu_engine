@@ -1,12 +1,12 @@
 from rest_framework import serializers
-from .models import Account, Lga, Ward, PollingUnit, Like
+from .models import Account, Lga, Ward, PollingUnit, Like, Video, VideoCategory
 
 
 class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['id','name','username', 'email']
+        fields = ['id','name','username', 'email', 'image', 'about']
 
 
 class NewAccountSerializer(serializers.ModelSerializer):
@@ -120,3 +120,22 @@ class PostSerializer(serializers.Serializer):
     image = serializers.CharField()
     updated = serializers.CharField()
     date = serializers.CharField()
+
+
+
+
+
+class VideoCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = VideoCategory
+        fields = '__all__'
+
+
+
+
+class VideoSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Video
+        fields = '__all__'

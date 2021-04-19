@@ -11,8 +11,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow, Video, VideoCategory
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer, VideoSerializer, VideoCategorySerializer
 
 import pandas as pd
 import os
@@ -1322,6 +1322,11 @@ class FollowView(APIView):
 
 
 
+
+
+
+
+
 class UserSearch(APIView):
 
     def get(self, request):
@@ -1363,6 +1368,28 @@ class UserSearch(APIView):
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
 
+
+    def post(self, request):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+class VideoCategoryView(APIView):
+
+    def get(self, request):
+
+        categories = VideoCategory.objects.all()
+        serializer = VideoCategorySerializer(categories, many=True)
+
+        return Response(serializer.data)
 
     def post(self, request):
         pass

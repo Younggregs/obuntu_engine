@@ -890,7 +890,8 @@ class PostView(APIView):
                     'text': comment.text,
                     'date': comment.date,
                     'user_id': account.id,
-                    'user_name': account.name
+                    'user_name': account.name,
+                    'user_image': account.image
                 }
 
                 commentBucket.append(buffer)
@@ -1150,7 +1151,8 @@ class CommentView(APIView):
                     'text': comment.text,
                     'date': comment.date,
                     'user_id': account.id,
-                    'user_name': account.name
+                    'user_name': account.name,
+                    'user_image': account.image
                 }
 
                 bucket.append(buffer)
@@ -1200,7 +1202,8 @@ class CommentView(APIView):
                     'text': comment.text,
                     'date': comment.date,
                     'user_id': account.id,
-                    'user_name': account.name
+                    'user_name': account.name,
+                    'user_image': account.image
                 }
 
                 bucket.append(buffer)

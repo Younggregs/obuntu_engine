@@ -113,6 +113,7 @@ class PostSerializer(serializers.Serializer):
     post_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
     user_name = serializers.CharField()
+    user_image = serializers.CharField()
     username = serializers.CharField()
     title = serializers.CharField()
     comments = CommentSerializer(many=True)

@@ -906,6 +906,7 @@ class PostView(APIView):
                 'user_id': account.id,
                 'user_name': account.name,
                 'username': account.username,
+                'user_image': account.image,
                 'comments': commentBucket,
                 'likes': likes
             }
@@ -943,6 +944,7 @@ class PostView(APIView):
                 'user_id': account.id,
                 'user_name': account.name,
                 'username': account.username,
+                'user_image': account.image,
                 'comments': [],
                 'likes': []
             }
@@ -1035,6 +1037,7 @@ class UpdatePost(APIView):
                 'user_id': account.id,
                 'user_name': account.name,
                 'username': account.username,
+                'user_image': account.image,
                 'comments': comments,
                 'likes': likes
             }

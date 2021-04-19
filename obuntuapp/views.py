@@ -905,6 +905,7 @@ class PostView(APIView):
                 'date': post.date,
                 'user_id': account.id,
                 'user_name': account.name,
+                'username': account.username,
                 'comments': commentBucket,
                 'likes': likes
             }
@@ -941,6 +942,7 @@ class PostView(APIView):
                 'date': post.date,
                 'user_id': account.id,
                 'user_name': account.name,
+                'username': account.username,
                 'comments': [],
                 'likes': []
             }
@@ -1032,6 +1034,7 @@ class UpdatePost(APIView):
                 'date': post.date,
                 'user_id': account.id,
                 'user_name': account.name,
+                'username': account.username,
                 'comments': comments,
                 'likes': likes
             }

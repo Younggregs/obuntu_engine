@@ -184,3 +184,18 @@ class Video(models.Model):
 
     class Meta:
         ordering = ['-date']
+
+
+
+
+class Chat(models.Model):
+    sender = models.ForeignKey(Account, on_delete=models.CASCADE, default=1)
+    receiver = models.IntegerField()
+    message = models.TextField()
+    date = models.DateTimeField(default = timezone.now)
+
+    def __str__(self):
+        return str(self.message)
+
+    class Meta:
+        ordering = ['-date']

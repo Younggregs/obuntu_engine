@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, Ward, PollingUnit, Post, Comment, Like, Video, VideoCategory
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, Ward, PollingUnit, Post, Comment, Like, Video, VideoCategory, Chat
 
 # Register your models here.
 
@@ -18,3 +18,4 @@ admin.site.register(Comment)
 admin.site.register(Like)
 admin.site.register(Video)
 admin.site.register(VideoCategory)
+admin.site.register(Chat)

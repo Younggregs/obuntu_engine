@@ -142,3 +142,12 @@ class VideoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Video
         fields = '__all__'
+
+
+
+class ChatSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    message = serializers.CharField()
+    sender = AccountSerializer()
+    receiver = AccountSerializer()
+    time = serializers.CharField()

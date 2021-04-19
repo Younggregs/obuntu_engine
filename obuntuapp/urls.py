@@ -68,5 +68,7 @@ urlpatterns = [
     #obuntu/video_category
     url(r'^video_category/$',views.VideoCategoryView.as_view(), name = 'video-category-view'),
     
+    #obuntu/chat
+    url(r'^chat/(?P<id>[0-9]+)/$',views.ChatView.as_view(), name = 'chat-view'),
 
 ]

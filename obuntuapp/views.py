@@ -11,8 +11,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow, Video, VideoCategory
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer, VideoSerializer, VideoCategorySerializer
+from django.db.models import Q
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow, Video, VideoCategory, Chat
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer, VideoSerializer, VideoCategorySerializer, ChatSerializer
 
 import pandas as pd
 import os
@@ -1401,4 +1402,54 @@ class VideoCategoryView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        pass
+
+
+
+
+
+
+
+class ChatView(APIView):
+
+    def get(self, request, id):
+        
+        try:
+            account = getAccount(request)
+            #account = Account.objects.get(id = 1)
+            chat = Chat.objects.filter(Q(sender = account) | Q(receiver = account.id))
+
+            bucket = []
+            for item in chat:
+                receiver = Account.objects.get(id = item.receiver)
+
+                buffer = {
+                    'id': item.id,
+                    'time': item.date,
+                    'message': item.message,
+                    'sender': item.sender,
+                    'receiver': receiver
+                }
+
+                bucket.append(buffer)
+
+            
+            serializer = ChatSerializer(bucket, many=True)
+            return Response(serializer.data)
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+    def post(self, request, id):
+        
         pass

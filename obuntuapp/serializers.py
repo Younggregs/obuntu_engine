@@ -99,6 +99,7 @@ class CommentSerializer(serializers.Serializer):
     comment_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
     user_name = serializers.CharField()
+    username = serializers.CharField()
     user_image = serializers.CharField()
     text = serializers.CharField()
     date = serializers.CharField()

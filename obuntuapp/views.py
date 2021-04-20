@@ -1350,7 +1350,7 @@ class UserSearch(APIView):
                 
                 follow = False
                 try:
-                    follow = Follow.objects.get(following= user.id, account=account.id)
+                    follow = Follow.objects.get(following_id=user.id, account = account.id)
                     follow = True
                 except:
                     pass

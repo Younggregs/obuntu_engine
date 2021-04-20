@@ -1359,6 +1359,8 @@ class UserSearch(APIView):
                     'id': user.id,
                     'name': user.name,
                     'username': user.username,
+                    'image': user.image,
+                    'about': user.about,
                     'isFollowing': follow
                 }
 

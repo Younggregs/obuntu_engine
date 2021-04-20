@@ -28,7 +28,10 @@ class UserSearchSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField()
     username = serializers.CharField()
+    image = serializers.CharField()
+    about = serializers.CharField()
     isFollowing = serializers.BooleanField()
+    
 
 
 class UpdateSerializer(serializers.Serializer):

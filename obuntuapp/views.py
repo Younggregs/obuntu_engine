@@ -892,6 +892,7 @@ class PostView(APIView):
                     'date': comment.date,
                     'user_id': account.id,
                     'user_name': account.name,
+                    'username': account.username,
                     'user_image': account.image
                 }
 

@@ -1447,9 +1447,41 @@ class ChatView(APIView):
         return Response(serializer.data)
 
 
-
-
-
     def post(self, request, id):
         
-        pass
+        try:
+            #account = getAccount(request)
+            account = Account.objects.get(id = 1)
+            message = request.POST.get("message","")
+
+            receiver = Account.objects.get(id = id)
+
+            chat = Chat()
+            chat.sender = account
+            chat.receiver = id
+            chat.message = message
+            chat.save()
+
+            buffer = {
+                'id': chat.id,
+                'time': chat.date,
+                'message': chat.message,
+                'sender': chat.sender,
+                'receiver': receiver
+            }
+
+            serializer = ChatSerializer(buffer, many=False)
+            return Response(serializer.data)
+
+        
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+

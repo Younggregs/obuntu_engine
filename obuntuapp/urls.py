@@ -71,4 +71,7 @@ urlpatterns = [
     #obuntu/chat
     url(r'^chat/(?P<id>[0-9]+)/$',views.ChatView.as_view(), name = 'chat-view'),
 
+    #obuntu/chatlist
+    url(r'^chatlist/$',views.ChatListView.as_view(), name = 'chat-list-view'),
+
 ]

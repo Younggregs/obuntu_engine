@@ -1526,3 +1526,56 @@ class ChatView(APIView):
         return Response(serializer.data)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+class ChatListView(APIView):
+
+    def get(self, request):
+        
+        if True:
+            account = getAccount(request)
+            #account = Account.objects.get(id = 1)
+            chat = Chat.objects.filter(Q(sender = account) | Q(receiver = account.id))
+
+            bucket = []
+            for item in chat:
+                if item in bucket:
+                    pass
+                
+                else:
+                    try:
+                        isSender = Chat.objects.get(sender = account)
+                        user = Account.objects.get(id = item.sender_id)
+                    except:
+                        user = Account.objects.get(id = item.receiver)
+                    
+                    if user.id == account.id:
+                        pass
+                    else:
+                        bucket.append(user)
+            
+            serializer = AccountSerializer(bucket, many=True)
+            return Response(serializer.data)
+        else:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        pass

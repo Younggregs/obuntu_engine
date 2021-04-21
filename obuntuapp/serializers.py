@@ -162,8 +162,6 @@ class ChatSerializer(serializers.Serializer):
 
 
 
-
-
 class UserFollowSerializer(serializers.Serializer):
 
     id = serializers.IntegerField()

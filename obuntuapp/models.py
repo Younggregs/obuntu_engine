@@ -198,4 +198,4 @@ class Chat(models.Model):
         return str(self.message)
 
     class Meta:
-        ordering = ['-date']
+        ordering = ['date']

@@ -1549,17 +1549,18 @@ class ChatListView(APIView):
 
             bucket = []
             for item in chat:
-                if item in bucket:
-                    pass
                 
+                
+                try:
+                    isSender = Chat.objects.get(sender = account)
+                    user = Account.objects.get(id = item.sender_id)
+                except:
+                    user = Account.objects.get(id = item.receiver)
+                
+                if user.id == account.id:
+                    pass
                 else:
-                    try:
-                        isSender = Chat.objects.get(sender = account)
-                        user = Account.objects.get(id = item.sender_id)
-                    except:
-                        user = Account.objects.get(id = item.receiver)
-                    
-                    if user.id == account.id:
+                    if user in bucket:
                         pass
                     else:
                         bucket.append(user)

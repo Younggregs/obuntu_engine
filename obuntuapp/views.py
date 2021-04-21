@@ -1491,8 +1491,8 @@ class ChatView(APIView):
     def post(self, request, id):
         
         try:
-            #account = getAccount(request)
-            account = Account.objects.get(id = 1)
+            account = getAccount(request)
+            #account = Account.objects.get(id = 1)
             message = request.POST.get("message","")
 
             receiver = Account.objects.get(id = id)

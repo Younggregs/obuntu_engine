@@ -45,12 +45,16 @@ class UpdateSerializer(serializers.Serializer):
     email = serializers.CharField()
     about = serializers.CharField()
 
+
+
 class AdminSerializer(serializers.Serializer):
     isSuperUser = serializers.BooleanField()
     phone = serializers.CharField()
     name = serializers.CharField()
     lga = serializers.CharField()
     signedUsers = serializers.IntegerField()
+
+
 
 class UserSerializer(serializers.Serializer):
     phone = serializers.CharField()
@@ -155,3 +159,17 @@ class ChatSerializer(serializers.Serializer):
     sender = AccountSerializer()
     receiver = AccountSerializer()
     time = serializers.CharField()
+
+
+
+
+
+class UserFollowSerializer(serializers.Serializer):
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    username = serializers.CharField()
+    image = serializers.CharField()
+    about = serializers.CharField()
+    following = AccountSerializer(many=True)
+    followers = AccountSerializer(many=True)

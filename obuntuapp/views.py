@@ -13,7 +13,7 @@ from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
 from django.db.models import Q
 from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, Post, Comment, Like, PostUpdate, Follow, Video, VideoCategory, Chat
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer, VideoSerializer, VideoCategorySerializer, ChatSerializer
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, PostSerializer, CommentSerializer, LikeSerializer, UpdateSerializer, UserSearchSerializer, LoginSerializer, VideoSerializer, VideoCategorySerializer, ChatSerializer, UserFollowSerializer
 
 import pandas as pd
 import os
@@ -72,11 +72,47 @@ def getAccount(request):
 class Login(APIView):
 
     def get(self,request):
-        
+         
         account = Account.objects.all()
-        serializer = AccountSerializer(account, many=True)
+        bucket = []
+        for user in account:
 
+            following = Follow.objects.filter(following = user)
+            followingRegister = []
+            for f in following:
+                account = Account.objects.get(id = f.account)
+                followingRegister.append(account)
+
+            followers = Follow.objects.filter(account = user.id)
+            followersRegister = []
+            for f in followers:
+                account = Account.objects.get(id = f.following_id)
+                followersRegister.append(account)
+
+            buffer = {
+                'id': user.id,
+                'name': user.name,
+                'username': user.username,
+                'image': user.image,
+                'about': user.about,
+                'following': followingRegister,
+                'followers': followersRegister
+            }
+
+            bucket.append(buffer)
+
+        serializer = UserFollowSerializer(bucket, many=True)
         return Response(serializer.data)
+
+        
+
+
+
+
+
+
+        
+
 
 
 

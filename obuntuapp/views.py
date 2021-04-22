@@ -1469,7 +1469,7 @@ class ChatView(APIView):
                     'time': item.date,
                     'message': item.message,
                     'sender': item.sender,
-                    'receiver': receiver
+                    'reciever': receiver
                 }
 
                 bucket.append(buffer)
@@ -1508,7 +1508,7 @@ class ChatView(APIView):
                 'time': chat.date,
                 'message': chat.message,
                 'sender': chat.sender,
-                'receiver': receiver
+                'reciever': receiver
             }
 
             serializer = ChatSerializer(buffer, many=False)

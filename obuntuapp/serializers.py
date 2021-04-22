@@ -157,7 +157,7 @@ class ChatSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     message = serializers.CharField()
     sender = AccountSerializer()
-    receiver = AccountSerializer()
+    reciever = AccountSerializer()
     time = serializers.CharField()
 
 

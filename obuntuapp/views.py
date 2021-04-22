@@ -230,6 +230,9 @@ class Signin(APIView):
                 status = authenticateLogin(request, phone, password)
                 
                 if status : 
+                    account.notificationToken = notificationToken
+                    account.save()
+                    
                     serializer = AccountSerializer(account, many=False)
                     return Response(serializer.data)
 

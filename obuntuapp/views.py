@@ -80,14 +80,20 @@ class Login(APIView):
             following = Follow.objects.filter(following = user)
             followingRegister = []
             for f in following:
-                account = Account.objects.get(id = f.account)
-                followingRegister.append(account)
+                userAccount = Account.objects.get(id = f.account)
+                if account.id == userAccount.id:
+                    pass
+                else:
+                    followingRegister.append(userAccount)
 
             followers = Follow.objects.filter(account = user.id)
             followersRegister = []
             for f in followers:
-                account = Account.objects.get(id = f.following_id)
-                followersRegister.append(account)
+                userAccount = Account.objects.get(id = f.following_id)
+                if account.id == userAccount.id:
+                    pass
+                else:
+                    followersRegister.append(userAccount)
 
             buffer = {
                 'id': user.id,
@@ -232,7 +238,7 @@ class Signin(APIView):
                 if status : 
                     account.notificationToken = notificationToken
                     account.save()
-                    
+
                     serializer = AccountSerializer(account, many=False)
                     return Response(serializer.data)
 
@@ -1366,6 +1372,14 @@ class FollowView(APIView):
         }
         serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)
+
+
+
+
+
+
+    def post(self, request, id):
+        pass
 
 
 

@@ -98,8 +98,8 @@ class Login(APIView):
                 'gender': user.gender,
                 'image': user.image,
                 'about': user.about,
-                'following': followingRegister,
-                'followers': followersRegister
+                'following': followersRegister,
+                'followers': followingRegister
             }
 
             bucket.append(buffer)

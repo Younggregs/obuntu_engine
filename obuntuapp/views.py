@@ -80,20 +80,14 @@ class Login(APIView):
             following = Follow.objects.filter(following = user)
             followingRegister = []
             for f in following:
-                userAccount = Account.objects.get(id = f.account)
-                if account.id == userAccount.id:
-                    pass
-                else:
-                    followingRegister.append(userAccount)
+                account = Account.objects.get(id = f.account)
+                followingRegister.append(account)
 
             followers = Follow.objects.filter(account = user.id)
             followersRegister = []
             for f in followers:
-                userAccount = Account.objects.get(id = f.following_id)
-                if account.id == userAccount.id:
-                    pass
-                else:
-                    followersRegister.append(userAccount)
+                account = Account.objects.get(id = f.following_id)
+                followersRegister.append(account)
 
             buffer = {
                 'id': user.id,

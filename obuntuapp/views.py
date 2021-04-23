@@ -98,6 +98,7 @@ class Login(APIView):
                 'gender': user.gender,
                 'image': user.image,
                 'about': user.about,
+                'isVerified': user.isVerified,
                 'following': followersRegister,
                 'followers': followingRegister
             }
@@ -1414,6 +1415,7 @@ class UserSearch(APIView):
                     'username': user.username,
                     'image': user.image,
                     'about': user.about,
+                    'isVerified': user.isVerified,
                     'isFollowing': follow
                 }
 

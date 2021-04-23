@@ -6,7 +6,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['id','name','username', 'email', 'image', 'about']
+        fields = ['id','name','username', 'email', 'image', 'about', 'isVerified']
 
 
 class NewAccountSerializer(serializers.ModelSerializer):
@@ -31,6 +31,7 @@ class UserSearchSerializer(serializers.Serializer):
     image = serializers.CharField()
     about = serializers.CharField()
     isFollowing = serializers.BooleanField()
+    isVerified = serializers.BooleanField()
     
 
 
@@ -172,5 +173,6 @@ class UserFollowSerializer(serializers.Serializer):
     gender = serializers.CharField()
     image = serializers.CharField()
     about = serializers.CharField()
+    isVerified = serializers.BooleanField()
     following = AccountSerializer(many=True)
     followers = AccountSerializer(many=True)

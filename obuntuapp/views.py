@@ -953,6 +953,7 @@ class PostView(APIView):
                 'user_name': account.name,
                 'username': account.username,
                 'user_image': account.image,
+                'isVerified': account.isVerified,
                 'comments': commentBucket,
                 'likes': likes
             }
@@ -991,6 +992,7 @@ class PostView(APIView):
                 'user_name': account.name,
                 'username': account.username,
                 'user_image': account.image,
+                'isVerified': account.isVerified,
                 'comments': [],
                 'likes': []
             }
@@ -1084,6 +1086,7 @@ class UpdatePost(APIView):
                 'user_name': account.name,
                 'username': account.username,
                 'user_image': account.image,
+                'isVerified': account.isVerified,
                 'comments': comments,
                 'likes': likes
             }
@@ -1198,6 +1201,7 @@ class CommentView(APIView):
                     'user_id': account.id,
                     'user_name': account.name,
                     'username': account.username,
+                    'isVerified': account.isVerified,
                     'user_image': account.image
                 }
 
@@ -1250,6 +1254,7 @@ class CommentView(APIView):
                     'user_id': account.id,
                     'user_name': account.name,
                     'username': account.username,
+                    'isVerified': account.isVerified,
                     'user_image': account.image
                 }
 

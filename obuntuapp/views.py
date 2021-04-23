@@ -936,6 +936,7 @@ class PostView(APIView):
                     'user_id': account.id,
                     'user_name': account.name,
                     'username': account.username,
+                    'isVerified': account.isVerified,
                     'user_image': account.image
                 }
 

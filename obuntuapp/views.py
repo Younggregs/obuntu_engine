@@ -927,17 +927,17 @@ class PostView(APIView):
             commentBucket = []
             for comment in comments:
 
-                account = Account.objects.get(id = comment.account_id)
+                commenter = Account.objects.get(id = comment.account_id)
 
                 buffer = {
                     'comment_id': comment.id,
                     'text': comment.text,
                     'date': comment.date,
-                    'user_id': account.id,
-                    'user_name': account.name,
-                    'username': account.username,
-                    'isVerified': account.isVerified,
-                    'user_image': account.image
+                    'user_id': commenter.id,
+                    'user_name': commenter.name,
+                    'username': commenter.username,
+                    'isVerified': commenter.isVerified,
+                    'user_image': commenter.image
                 }
 
                 commentBucket.append(buffer)
@@ -1182,6 +1182,10 @@ class LikePost(APIView):
 
 
 
+
+
+
+
 class CommentView(APIView):
     
     def get(self, request, id):
@@ -1235,7 +1239,7 @@ class CommentView(APIView):
             text = request.POST.get("text","")
 
             comment = Comment()
-            comment.account = account
+            #comment.account = account
             comment.post = post
             comment.text = text
             comment.save()
@@ -1245,18 +1249,18 @@ class CommentView(APIView):
             bucket = []
             for comment in commentList:
 
-                account = Account.objects.get(id = comment.account_id)
+                commenter = Account.objects.get(id = comment.account_id)
                 #updated = PostUpdate.objects.get(post = post.id)
 
                 buffer = {
                     'comment_id': comment.id,
                     'text': comment.text,
                     'date': comment.date,
-                    'user_id': account.id,
-                    'user_name': account.name,
-                    'username': account.username,
-                    'isVerified': account.isVerified,
-                    'user_image': account.image
+                    'user_id': commenter.id,
+                    'user_name': commenter.name,
+                    'username': commenter.username,
+                    'isVerified': commenter.isVerified,
+                    'user_image': commenter.image
                 }
 
                 bucket.append(buffer)

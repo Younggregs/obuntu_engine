@@ -64,7 +64,7 @@ class Account(models.Model):
     password = models.CharField(max_length = 350)
     notificationToken = models.CharField(max_length = 1000, default=None)
     gender = models.CharField(max_length = 19, default='')
-    about = models.CharField(max_length = 150, default='')
+    about = models.CharField(max_length = 150, default='Obuntu: I am because you are.')
     hasVotersCard = models.BooleanField(default=False)
     email = models.EmailField(default = '')
     isAdmin = models.BooleanField(default = False)
@@ -129,7 +129,7 @@ class PostUpdate(models.Model):
 class Comment(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, default=1)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, default=1)
-    text = models.TextField()
+    text = models.TextField()    
     date = models.DateTimeField(default = timezone.now)
 
     def __str__(self):

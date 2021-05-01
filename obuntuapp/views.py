@@ -325,12 +325,16 @@ class Signup(APIView):
             user.name = name
             user.save()
 
+            un = name.strip()
+            username = un[0:8]
+
+
             userAccount = Account()
             userAccount.name = name
             userAccount.phone = phone
             userAccount.password = password
             userAccount.notificationToken = notificationToken
-            userAccount.username = name
+            userAccount.username = username
             userAccount.lga = lgaObject
             userAccount.pollingUnit = pollingUnitObject
             userAccount.save()
@@ -414,6 +418,8 @@ class UpdateAccount(APIView):
             lga = request.POST.get("lga", False)
             pollingUnit = request.POST.get("pollingUnit", False)
 
+            un = username.strip()
+            username = un[0:8]
             
             userAccount = getAccount(request)
             #userAccount = Account.objects.get(id = 1)
@@ -1239,7 +1245,7 @@ class CommentView(APIView):
             text = request.POST.get("text","")
 
             comment = Comment()
-            #comment.account = account
+            comment.account = account
             comment.post = post
             comment.text = text
             comment.save()
@@ -1407,7 +1413,7 @@ class UserSearch(APIView):
         
         try:
             account = getAccount(request)
-            userList = Account.objects.all()
+            userList = Account.objects.exclude(id = account.id)
 
             bucket = []
             for user in userList:

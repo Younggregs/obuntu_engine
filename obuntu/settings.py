@@ -74,6 +74,8 @@ ROOT_URLCONF = 'obuntu.urls'
 CORS_ORIGIN_ALLOW_ALL = True
 
 # CORS_ORIGIN_WHITELIST = (
+#     'http://apc-portal.herokuapp.com',
+#     'http://apc-portal.netlify.app',
 #     'http://159.65.201.173',
 #     'http://obuntu.community',
 #     'http://localhost:3000',

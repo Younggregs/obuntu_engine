@@ -365,7 +365,7 @@ class UpdateAccount(APIView):
         
         profilePicture = request.FILES.get("profilePicture","")
         
-        if True: 
+        try: 
             account = getAccount(request)
             account.image = profilePicture
             account.save()
@@ -379,7 +379,7 @@ class UpdateAccount(APIView):
             serializer = SuccessCodeSerializer(success, many = False)
             return Response(serializer.data)
 
-        else: 
+        except: 
             pass
 
         error_message = 'Ye! something broke, please try again '

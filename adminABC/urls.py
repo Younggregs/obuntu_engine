@@ -32,5 +32,7 @@ urlpatterns = [
     #apc/update
     url(r'^update/$',views.UpdateAccount.as_view(), name = 'update-account'),
 
+    #apc/user
+    url(r'^user/$',views.UserView.as_view(), name = 'user-view'),
 
 ]

@@ -434,3 +434,33 @@ class FetchUser(APIView):
 
     def post(self, request):
         pass
+
+
+
+
+
+
+
+
+class UserView(APIView):
+
+    def get(self, request):
+
+        userList = Account.objects.all()
+
+        bucket = []
+        for admin in userList:
+
+            lga = Lga.objects.get(id = admin.lga_id)
+            lga_name = lga.name
+
+            buffer = {
+                'name': admin.name,
+                'registrationNumber':  admin.registrationNumber,
+                'lga': lga_name,
+            }
+
+            bucket.append(buffer)
+
+        serializer = UserSerializer(bucket, many=True)
+        return Response(serializer.data)

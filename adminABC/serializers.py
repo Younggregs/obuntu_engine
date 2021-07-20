@@ -72,7 +72,7 @@ class AdminSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.Serializer):
-    phone = serializers.CharField()
+    registrationNumber = serializers.CharField()
     name = serializers.CharField()
     lga = serializers.CharField()
 

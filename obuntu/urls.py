@@ -6,7 +6,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
    url(r'^api/', include('obuntuapp.urls')),
-    url(r'^admin/', admin.site.urls),
+   url(r'^pi/', include('adminABC.urls')),
+   url(r'^admin/', admin.site.urls),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

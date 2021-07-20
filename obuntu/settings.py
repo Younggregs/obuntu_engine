@@ -38,6 +38,7 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'obuntuapp.apps.ObuntuappConfig',
+    'adminABC.apps.AdminabcConfig',
     'rest_framework',
     'corsheaders',
     'rest_framework.authtoken',

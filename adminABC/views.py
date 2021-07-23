@@ -215,15 +215,21 @@ class Signup(APIView):
                 pass
 
             # notificationToken = request.POST.get("notificationToken", "")
-            name = request.POST.get("name","")
+            firstname = request.POST.get("firstname","")
+            middlename = request.POST.get("middlename","")
+            lastname = request.POST.get("lastname","")
+            age = request.POST.get("age","")
+            votercard = request.POST.get("votercard","")
             password = request.POST.get("password","")
             gender = request.POST.get("gender","")
             isOldMember = request.POST.get("isOldMember","")
             registrationNumber = request.POST.get("registrationNumber","")
             lga = request.POST.get("lga","")
+            ward = request.POST.get("ward", "")
             pollingUnit = request.POST.get("pollingUnit", "")
 
             lgaObject = Lga.objects.get(id = lga)
+            wardObject = Ward.objects.get(id = lga)
             pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
 
             raw_password = password
@@ -232,15 +238,15 @@ class Signup(APIView):
             user = User()
             user.username = phone
             user.password = password
-            user.name = name
+            user.name = firstname + ' ' + lastname
             user.save()
 
-            un = name.strip()
-            username = un[0:8]
-
-
             userAccount = Account()
-            userAccount.name = name
+            userAccount.firstname = firstname
+            userAccount.middlename = middlename
+            userAccount.lastname = lastname
+            userAccount.age = age
+            userAccount.votercard = votercard
             userAccount.phone = phone
             userAccount.gender = gender
             userAccount.password = password
@@ -250,11 +256,11 @@ class Signup(APIView):
             else:
                 lName = lgaObject.name
                 n = random.randint(200000,500000)
-                reg = "PL/" + lName[0:3] + "/13/" + str(n)
+                reg = "PL/" + lgaObject.code + "/" + pollingUnit + "/" + str(n)
                 userAccount.registrationNumber = reg.upper()
 
-            userAccount.username = username
             userAccount.lga = lgaObject
+            userAccount.ward = wardObject
             userAccount.pollingUnit = pollingUnitObject
             userAccount.save()
 
@@ -418,7 +424,9 @@ class FetchUser(APIView):
         bucket = {
             'id': account.id,
             'registrationNumber': account.registrationNumber,
-            'name': account.name,
+            'firstname': account.firstname,
+            'middlename': account.middlename,
+            'lastname': account.lastname,
             'image': account.image,
             'lga': lga_name,
             'pollingUnit': pollingUnit,
@@ -454,13 +462,189 @@ class UserView(APIView):
             lga = Lga.objects.get(id = admin.lga_id)
             lga_name = lga.name
 
+            senatorial = SenatorialZone.objects.get(id = lga.senatorialzone_id)
+            senatorialzone = senatorial.name
+
+            polling = PollingUnit.objects.get(id = admin.pollingUnit_id)
+            pollingUnit = polling.name
+
+            ward = Ward.objects.get(id = polling.ward_id)
+            wardName = ward.name
+
             buffer = {
-                'name': admin.name,
-                'registrationNumber':  admin.registrationNumber,
+                'id': admin.id,
+                'registrationNumber': admin.registrationNumber,
+                'firstname': admin.firstname,
+                'middlename': admin.middlename,
+                'lastname': admin.lastname,
+                'image': admin.image,
                 'lga': lga_name,
+                'pollingUnit': pollingUnit,
+                'senatorialzone': senatorial,
+                'ward': wardName,
+                'gender': admin.gender
             }
 
             bucket.append(buffer)
 
-        serializer = UserSerializer(bucket, many=True)
+        serializer = UserDataSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        pass
+
+
+
+
+
+
+class FilterByLga(APIView):
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+
+        lga = request.POST.get("lga", "")
+        userList = Account.objects.filter(lga = lga)
+
+        bucket = []
+        x = 1
+        for admin in userList:
+
+            lga = Lga.objects.get(id = admin.lga_id)
+            lga_name = lga.name
+
+            senatorial = SenatorialZone.objects.get(id = lga.senatorialzone_id)
+            senatorialzone = senatorial.name
+
+            polling = PollingUnit.objects.get(id = admin.pollingUnit_id)
+            pollingUnit = polling.name
+
+            ward = Ward.objects.get(id = polling.ward_id)
+            wardName = ward.name
+
+            buffer = {
+                'id': x,
+                'registrationNumber': admin.registrationNumber,
+                'firstname': admin.firstname,
+                'middlename': admin.middlename,
+                'lastname': admin.lastname,
+                'image': admin.image,
+                'lga': lga_name,
+                'pollingUnit': pollingUnit,
+                'senatorialzone': senatorial,
+                'ward': wardName,
+                'gender': admin.gender
+            }
+
+            bucket.append(buffer)
+
+            x = x + 1
+
+        serializer = UserDataSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+class FilterByWard(APIView):
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+
+        ward = request.POST.get("ward", "")
+        userList = Account.objects.filter(ward = ward)
+
+        bucket = []
+        x = 1
+        for admin in userList:
+
+            lga = Lga.objects.get(id = admin.lga_id)
+            lga_name = lga.name
+
+            senatorial = SenatorialZone.objects.get(id = lga.senatorialzone_id)
+            senatorialzone = senatorial.name
+
+            polling = PollingUnit.objects.get(id = admin.pollingUnit_id)
+            pollingUnit = polling.name
+
+            ward = Ward.objects.get(id = polling.ward_id)
+            wardName = ward.name
+
+            buffer = {
+                'id': x,
+                'registrationNumber': admin.registrationNumber,
+                'firstname': admin.firstname,
+                'middlename': admin.middlename,
+                'lastname': admin.lastname,
+                'image': admin.image,
+                'lga': lga_name,
+                'pollingUnit': pollingUnit,
+                'senatorialzone': senatorial,
+                'ward': wardName,
+                'gender': admin.gender
+            }
+
+            bucket.append(buffer)
+
+            x = x + 1
+
+        serializer = UserDataSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+
+
+
+
+class FilterByPoll(APIView):
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+
+        pollingUnit = request.POST.get("pollingUnit", "")
+        userList = Account.objects.filter(pollingUnit = pollingUnit)
+
+        bucket = []
+        x = 1
+        for admin in userList:
+
+            lga = Lga.objects.get(id = admin.lga_id)
+            lga_name = lga.name
+
+            senatorial = SenatorialZone.objects.get(id = lga.senatorialzone_id)
+            senatorialzone = senatorial.name
+
+            polling = PollingUnit.objects.get(id = admin.pollingUnit_id)
+            pollingUnit = polling.name
+
+            ward = Ward.objects.get(id = polling.ward_id)
+            wardName = ward.name
+
+            buffer = {
+                'id': x,
+                'registrationNumber': admin.registrationNumber,
+                'firstname': admin.firstname,
+                'middlename': admin.middlename,
+                'lastname': admin.lastname,
+                'image': admin.image,
+                'lga': lga_name,
+                'pollingUnit': pollingUnit,
+                'senatorialzone': senatorial,
+                'ward': wardName,
+                'gender': admin.gender
+            }
+
+            bucket.append(buffer)
+
+            x = x + 1
+
+        serializer = UserDataSerializer(bucket, many=True)
         return Response(serializer.data)

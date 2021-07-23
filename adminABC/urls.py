@@ -35,4 +35,13 @@ urlpatterns = [
     #apc/user
     url(r'^user/$',views.UserView.as_view(), name = 'user-view'),
 
+    #apc/filterbylga
+    url(r'^filterbylga/$',views.FilterByLga.as_view(), name = 'filter-by-lga'),
+
+    #apc/filterbyward
+    url(r'^filterbyward/$',views.FilterByWard.as_view(), name = 'filter-by-ward'),
+
+    #apc/filterbylga
+    url(r'^filterbypoll/$',views.FilterByPoll.as_view(), name = 'filter-by-poll'),
+
 ]

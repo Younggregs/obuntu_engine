@@ -4,7 +4,7 @@ from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, War
 # Register your models here.
 
 class AccountSearch(admin.ModelAdmin):
-    search_fields = ['name', 'phone', 'username']
+    search_fields = ['firstname', 'phone', 'username']
   
 admin.site.register(Account, AccountSearch)
 admin.site.register(Lga)

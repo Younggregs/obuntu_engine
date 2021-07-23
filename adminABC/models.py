@@ -19,6 +19,7 @@ class SenatorialZone(models.Model):
 class Lga(models.Model):
     senatorialzone = models.ForeignKey(SenatorialZone, on_delete=models.CASCADE)
     name = models.CharField(max_length = 350)
+    code = models.CharField(max_length = 3, default="")
     date = models.DateTimeField(default = timezone.now)
 
     def __str__(self):
@@ -56,16 +57,18 @@ class PollingUnit(models.Model):
 
 class Account(models.Model):
     lga = models.ForeignKey(Lga, on_delete=models.CASCADE, default=1)
+    ward = models.ForeignKey(Ward, on_delete=models.CASCADE, default=1)
     pollingUnit = models.ForeignKey(PollingUnit, on_delete=models.CASCADE, default=1)
-    name = models.CharField(max_length = 350)
-    registrationNumber = models.CharField(max_length = 50)
-    username = models.CharField(max_length = 350, default='username')
     image = models.FileField(default=None)
-    phone = models.CharField(max_length = 19)
     password = models.CharField(max_length = 350)
-    # notificationToken = models.CharField(max_length = 1000, default=None)
+    firstname = models.CharField(max_length = 350,  default='')
+    middlename = models.CharField(max_length = 350 , default='')
+    lastname = models.CharField(max_length = 350, default='')
+    phone = models.CharField(max_length = 19, default='')
     gender = models.CharField(max_length = 19, default='')
-    about = models.CharField(max_length = 150, default='Change is inevitable')
+    votercard = models.CharField(max_length = 150, default='')
+    age = models.CharField(max_length = 150, default='')
+    registrationNumber = models.CharField(max_length = 50)
     isOldMember = models.BooleanField(default=False)
     email = models.EmailField(default = '')
     isAdmin = models.BooleanField(default = False)
@@ -74,7 +77,7 @@ class Account(models.Model):
     date = models.DateTimeField(default = timezone.now)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.firstname)
     
     class Meta:
         ordering = ['-date']

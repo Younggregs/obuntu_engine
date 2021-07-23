@@ -38,7 +38,9 @@ class UserSearchSerializer(serializers.Serializer):
 class UserDataSerializer(serializers.Serializer):
 
     id = serializers.IntegerField()
-    name = serializers.CharField()
+    firstname = serializers.CharField()
+    middlename = serializers.CharField()
+    lastname = serializers.CharField()
     registrationNumber = serializers.CharField()
     image = serializers.CharField()
     lga = serializers.CharField()

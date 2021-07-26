@@ -14,6 +14,9 @@ urlpatterns = [
     #apc/onboard
     url(r'^onboard/$',views.Onboard.as_view(), name = 'onboard'),
 
+    #apc/membercount
+    url(r'^membercount/$',views.MemberCountView.as_view(), name = 'member-count'),
+
     #apc/signup
     url(r'^signup/$',views.Signup.as_view(), name = 'signup'),
 

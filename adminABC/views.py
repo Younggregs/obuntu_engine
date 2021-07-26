@@ -316,6 +316,27 @@ class IsSuperUser(APIView):
     
 
 
+
+
+class MemberCountView(APIView):
+
+    def get(self, request):
+
+        count = Account.objects.all().count()
+        success = {
+                'code' : count
+        }
+
+        serializer = SuccessCodeSerializer(success, many = False)
+        return Response(serializer.data)
+
+    def post(self, request):
+        pass
+
+
+
+
+
 class Signup(APIView):
 
     def get(self, request):
@@ -617,7 +638,7 @@ class UserView(APIView):
 
     def get(self, request):
 
-        userList = Account.objects.all()[:100]
+        userList = Account.objects.all()[:50]
 
         bucket = []
         for admin in userList:

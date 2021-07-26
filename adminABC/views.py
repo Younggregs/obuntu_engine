@@ -59,9 +59,9 @@ def getAccount(request):
 
     if request.user.is_authenticated:
         user = User.objects.get(username = request.user)
-        phone = user.username
+        registrationNumber = user.username
 
-        account = Account.objects.get(phone=phone)
+        account = Account.objects.get(registrationNumber=registrationNumber)
         return account
 
     else:
@@ -69,6 +69,27 @@ def getAccount(request):
         return -1
 
 
+
+
+
+
+
+# def createUsername(size=5, chars=string.digits):
+
+#     status = True
+#     while status:
+
+#         count = OnePage.objects.all().count()
+#         code = ''.join(random.choice(chars) for _ in range(size))
+#         username = count + int(code)
+
+#         try: 
+#             onepage = OnePage.objects.get(username= username)
+#         except:
+#             status = False
+    
+
+#     return username
 
 
 
@@ -146,6 +167,90 @@ class RecordPollingUnits(APIView):
 
 
 
+
+
+
+
+
+class Onboard(APIView):
+
+    def get(self, request):
+
+        url = PROJECT_ROOT + '/sheet2.csv'
+
+        with open(url) as csv_file:
+            csv_reader = csv.reader(csv_file, delimiter=',')
+            x = 0
+            for row in csv_reader:
+
+                p = row[7].lower()
+                if x != 0 and len(p) > 0: 
+                    sn = row[0].lower()
+                    firstname  = row[1].lower()
+                    middlename = row[2].lower()
+                    lastname = row[3].lower()
+                    phone = row[4].lower()
+                    gender = row[5].lower()
+                    membership = row[6].lower()
+                    pu = row[7].lower()
+                    votercard = row[8].lower()
+                    age = row[9].lower()
+
+                    phone = '0' + str(phone)
+
+                    try:
+
+                        
+                        try:
+                            phoneExist = Account.objects.get(phone = phone)
+                        except:
+
+                            pollingUnit = PollingUnit.objects.get(delimitation = str(pu))
+                            wardObject = Ward.objects.get(id = pollingUnit.ward_id)
+                            lgaObject = Lga.objects.get(id = wardObject.lga_id)
+
+                            userAccount = Account()
+                            userAccount.firstname = firstname
+                            userAccount.middlename = middlename
+                            userAccount.lastname = lastname
+                            userAccount.age = age
+                            userAccount.votercard = votercard
+                            userAccount.phone = phone
+                            userAccount.gender = gender
+                            userAccount.password = 'password'
+                            userAccount.lga = lgaObject
+                            userAccount.ward = wardObject
+                            userAccount.pollingUnit = pollingUnit
+                            userAccount.save()
+
+                    
+                    except:
+                        pass
+
+                else:
+                    pass
+
+                x = x + 1
+
+        code = x
+        success = {
+            'code' : code
+        }
+
+        serializer = SuccessCodeSerializer(success, many = False)
+        return Response(serializer.data)
+       
+       
+
+    def post(self, request):
+        pass
+
+
+
+
+
+
+
 class LgaView(APIView):
 
     def get(self, request):
@@ -176,7 +281,7 @@ class WardView(APIView):
 
 
 
-class PolllingUnitView(APIView):
+class PollingUnitView(APIView):
 
     def get(self, request, ward):
 
@@ -192,6 +297,25 @@ class PolllingUnitView(APIView):
 
 
 
+
+class IsSuperUser(APIView):
+
+    def get(self, request):
+
+        try:
+            account = getAccount(request)
+            return Response(account.isSuperUser)
+        except:
+            pass
+
+        return Response(False)
+
+    def post(self, request):
+        pass
+
+    
+
+
 class Signup(APIView):
 
     def get(self, request):
@@ -205,7 +329,21 @@ class Signup(APIView):
             try:
                 accountExist = Account.objects.get(phone=phone)
 
-                error_message = 'Account with this phone id already exist'
+                error_message = 'Account with this phone number already exist'
+                err = {
+                    'error_message' : error_message
+                }
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+            except:
+                pass
+
+            registrationNumber = request.POST.get("registrationNumber","")
+
+            try:
+                accountExist = Account.objects.get(registrationNumber=registrationNumber)
+
+                error_message = 'Account with this registration number already exist'
                 err = {
                     'error_message' : error_message
                 }
@@ -229,17 +367,11 @@ class Signup(APIView):
             pollingUnit = request.POST.get("pollingUnit", "")
 
             lgaObject = Lga.objects.get(id = lga)
-            wardObject = Ward.objects.get(id = lga)
+            wardObject = Ward.objects.get(id = ward)
             pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
 
             raw_password = password
             password = make_password(password)
-            
-            user = User()
-            user.username = phone
-            user.password = password
-            user.name = firstname + ' ' + lastname
-            user.save()
 
             userAccount = Account()
             userAccount.firstname = firstname
@@ -264,7 +396,13 @@ class Signup(APIView):
             userAccount.pollingUnit = pollingUnitObject
             userAccount.save()
 
-            code = 11
+            user = User()
+            user.username = userAccount.registrationNumber
+            user.password = password
+            user.name = firstname + ' ' +  middlename + ' ' + lastname
+            user.save()
+
+            code = userAccount.registrationNumber
             success = {
                 'code' : code
             }
@@ -303,50 +441,75 @@ class Signin(APIView):
 
     def post(self,request):
 
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
+        try:
+            username = request.POST.get("username","")
+            password = request.POST.get("password","")
 
-            phone = serializer.data['phone']
-            password = serializer.data['password']
+            registrationNumber = 1
 
             try:
-                User.objects.get(username = phone)
-                account = Account.objects.get(phone = phone)
-                
-                status = authenticateLogin(request, phone, password)
-                
-                if status : 
-
-                    code = 11
-                    success = {
-                        'code' : code
-                    }
-
-                    serializer = SuccessCodeSerializer(success, many = False)
-                    return Response(serializer.data)
-
-                else:
-
-                    error_message = 'Oops login details do not match'
-                    err = {
-                        'error_message' : error_message
-                    }
-
-                    serializer = ErrorCheckSerializer( err, many=False)
-                    return Response(serializer.data)
-
+                account = Account.objects.get(phone = username)
+                registrationNumber = account.registrationNumber
             except:
                 pass
 
-            error_message = 'Oops login details do not match'
-            err = {
-                'error_message' : error_message
-            }
+            try:
+                account = Account.objects.get(registrationNumber = username)
+                registrationNumber = account.registrationNumber
+            except:
+                pass
 
-            serializer = ErrorCheckSerializer( err, many=False)
-            return Response(serializer.data)
+            
+            if registrationNumber != 1:
+
+                try:
+                    User.objects.get(username = registrationNumber)
+                    account = Account.objects.get(registrationNumber = registrationNumber)
+                    
+                    status = authenticateLogin(request, registrationNumber, password)
+                    
+                    if status : 
+
+                        code = account.registrationNumber
+                        success = {
+                            'code' : code
+                        }
+
+                        serializer = SuccessCodeSerializer(success, many = False)
+                        return Response(serializer.data)
+
+                    else:
+
+                        error_message = 'Oops login details do not match'
+                        err = {
+                            'error_message' : error_message
+                        }
+
+                        serializer = ErrorCheckSerializer( err, many=False)
+                        return Response(serializer.data)
+
+                except:
+                    pass
+
+                error_message = 'Oops login details do not match'
+                err = {
+                    'error_message' : error_message
+                }
+
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+
+
+            else: 
+                error_message = 'Username (phone/registration number) do not exist'
+                err = {
+                    'error_message' : error_message
+                }
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+
         
-        else:
+        except:
             pass
     
         error_message = 'Sorry could not complete process, reload page and try again'
@@ -454,7 +617,7 @@ class UserView(APIView):
 
     def get(self, request):
 
-        userList = Account.objects.all()
+        userList = Account.objects.all()[:100]
 
         bucket = []
         for admin in userList:
@@ -611,6 +774,59 @@ class FilterByPoll(APIView):
 
         pollingUnit = request.POST.get("pollingUnit", "")
         userList = Account.objects.filter(pollingUnit = pollingUnit)
+
+        bucket = []
+        x = 1
+        for admin in userList:
+
+            lga = Lga.objects.get(id = admin.lga_id)
+            lga_name = lga.name
+
+            senatorial = SenatorialZone.objects.get(id = lga.senatorialzone_id)
+            senatorialzone = senatorial.name
+
+            polling = PollingUnit.objects.get(id = admin.pollingUnit_id)
+            pollingUnit = polling.name
+
+            ward = Ward.objects.get(id = polling.ward_id)
+            wardName = ward.name
+
+            buffer = {
+                'id': x,
+                'registrationNumber': admin.registrationNumber,
+                'firstname': admin.firstname,
+                'middlename': admin.middlename,
+                'lastname': admin.lastname,
+                'image': admin.image,
+                'lga': lga_name,
+                'pollingUnit': pollingUnit,
+                'senatorialzone': senatorial,
+                'ward': wardName,
+                'gender': admin.gender
+            }
+
+            bucket.append(buffer)
+
+            x = x + 1
+
+        serializer = UserDataSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+class SearchByName(APIView):
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+
+        name = request.POST.get("name", "")
+        userList = Account.objects.filter(firstname__icontains = name) | Account.objects.filter(middlename__icontains = name)  | Account.objects.filter(lastname__icontains = name)
 
         bucket = []
         x = 1

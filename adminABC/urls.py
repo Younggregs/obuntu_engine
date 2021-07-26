@@ -11,6 +11,9 @@ urlpatterns = [
     #apc/recordpolls
     url(r'^recordpolls/$',views.RecordPollingUnits.as_view(), name = 'record-polling-units'),
 
+    #apc/onboard
+    url(r'^onboard/$',views.Onboard.as_view(), name = 'onboard'),
+
     #apc/signup
     url(r'^signup/$',views.Signup.as_view(), name = 'signup'),
 
@@ -27,7 +30,7 @@ urlpatterns = [
     url(r'^ward/(?P<lga>[0-9]+)$',views.WardView.as_view(), name = 'ward-view'),
 
     #apc/pollingunits
-    url(r'^pollingunits/(?P<ward>[0-9]+)/$',views.PolllingUnitView.as_view(), name = 'polling-unit-view'),
+    url(r'^pollingunits/(?P<ward>[0-9]+)/$',views.PollingUnitView.as_view(), name = 'polling-unit-view'),
 
     #apc/update
     url(r'^update/$',views.UpdateAccount.as_view(), name = 'update-account'),
@@ -43,5 +46,11 @@ urlpatterns = [
 
     #apc/filterbylga
     url(r'^filterbypoll/$',views.FilterByPoll.as_view(), name = 'filter-by-poll'),
+
+    #apc/searchbyname
+    url(r'^searchbyname/$',views.SearchByName.as_view(), name = 'search-by-name'),
+
+    #apc/superuser
+    url(r'^superuser/$',views.IsSuperUser.as_view(), name = 'is-superuser'),
 
 ]

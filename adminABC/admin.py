@@ -5,11 +5,19 @@ from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, War
 
 class AccountSearch(admin.ModelAdmin):
     search_fields = ['firstname', 'phone', 'username']
+
+
+class PollSearch(admin.ModelAdmin):
+    search_fields = ['name', 'delimitation']
+
+
+class WardSearch(admin.ModelAdmin):
+    search_fields = ['id', 'name']
   
 admin.site.register(Account, AccountSearch)
 admin.site.register(Lga)
 admin.site.register(SenatorialZone)
 admin.site.register(AdminUser)
 admin.site.register(SuperUserAdmin)
-admin.site.register(Ward)
-admin.site.register(PollingUnit)
+admin.site.register(Ward, WardSearch)
+admin.site.register(PollingUnit, PollSearch)

@@ -70,7 +70,7 @@ class Account(models.Model):
     age = models.CharField(max_length = 150, default='')
     registrationNumber = models.CharField(max_length = 50)
     isOldMember = models.BooleanField(default=False)
-    email = models.EmailField(default = '')
+    # email = models.EmailField(default = '')
     isAdmin = models.BooleanField(default = False)
     isSuperUser = models.BooleanField(default = False)
     isVerified = models.BooleanField(default = False)

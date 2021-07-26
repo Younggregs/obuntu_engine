@@ -4,7 +4,7 @@ from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, War
 # Register your models here.
 
 class AccountSearch(admin.ModelAdmin):
-    search_fields = ['firstname', 'phone', 'username']
+    search_fields = ['firstname', 'phone', 'firstname', 'middlename', "lastname"]
 
 
 class PollSearch(admin.ModelAdmin):

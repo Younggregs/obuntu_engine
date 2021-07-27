@@ -10,10 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-# from pathlib import Path
+from pathlib import Path
 import os
-# import os.path  
-# import sys
+import os.path  
+import sys
 
 #Static root
 PROJECT_ROOT = os.path.normpath(os.path.dirname(__file__))
@@ -29,7 +29,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '!84ox8k($ex6(a26k^u5pmm(io#0+$p)_sz3%i&tz6l_j=^b#o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -164,8 +164,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
-STATIC_ROOT = '/var/cache/obuntu/static/'
+STATIC_ROOT = os.path.join(PROJECT_ROOT ,'static')
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/var/opt/obuntu/static/'
+MEDIA_ROOT = os.path.join(BASE_DIR ,'media')
 MEDIA_URL = '/media/'

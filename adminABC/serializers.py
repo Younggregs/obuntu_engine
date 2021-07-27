@@ -48,6 +48,7 @@ class UserDataSerializer(serializers.Serializer):
     senatorialzone = serializers.CharField()
     ward = serializers.CharField()
     gender = serializers.CharField()
+    age = serializers.CharField()
     
 
 

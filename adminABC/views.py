@@ -616,7 +616,8 @@ class FetchUser(APIView):
             'pollingUnit': pollingUnit,
             'senatorialzone': senatorial,
             'ward': wardName,
-            'gender': account.gender
+            'gender': account.gender, 
+            'age': account.age
         }
 
         serializer = UserDataSerializer(bucket, many=False)
@@ -666,7 +667,8 @@ class UserView(APIView):
                 'pollingUnit': pollingUnit,
                 'senatorialzone': senatorial,
                 'ward': wardName,
-                'gender': admin.gender
+                'gender': admin.gender,
+                'age': admin.age
             }
 
             bucket.append(buffer)

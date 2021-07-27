@@ -74,22 +74,7 @@ def getAccount(request):
 
 
 
-# def createUsername(size=5, chars=string.digits):
 
-#     status = True
-#     while status:
-
-#         count = OnePage.objects.all().count()
-#         code = ''.join(random.choice(chars) for _ in range(size))
-#         username = count + int(code)
-
-#         try: 
-#             onepage = OnePage.objects.get(username= username)
-#         except:
-#             status = False
-    
-
-#     return username
 
 
 
@@ -171,20 +156,41 @@ class RecordPollingUnits(APIView):
 
 
 
+def createInternalId(pu, pollingUnit):
+
+    status = True
+    x = 1
+    while status:
+
+        count = Account.objects.filter(pollingUnit = pollingUnit).count()
+        internalId = pu + '/' + str(count + x)
+
+        try: 
+            account = Account.objects.get(internalId = internalId)
+        except:
+            status = False
+
+        x = x + 1
+
+    return internalId
+
+
+
+
 
 class Onboard(APIView):
 
     def get(self, request):
 
-        url = PROJECT_ROOT + '/sheet2.csv'
-
+        url = PROJECT_ROOT + '/sheet1.csv'
+        #Account.objects.all().delete()
         with open(url) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             x = 0
             for row in csv_reader:
 
                 p = row[7].lower()
-                if x != 0 and len(p) > 0: 
+                if x != 0 and len(p) > 5: 
                     sn = row[0].lower()
                     firstname  = row[1].lower()
                     middlename = row[2].lower()
@@ -196,20 +202,22 @@ class Onboard(APIView):
                     votercard = row[8].lower()
                     age = row[9].lower()
 
-                    phone = '0' + str(phone)
+                    if len(phone) > 8:
+                        phone = '0' + str(phone)
 
                     try:
 
-                        
-                        try:
-                            phoneExist = Account.objects.get(phone = phone)
-                        except:
-
+                        if True:
                             pollingUnit = PollingUnit.objects.get(delimitation = str(pu))
                             wardObject = Ward.objects.get(id = pollingUnit.ward_id)
                             lgaObject = Lga.objects.get(id = wardObject.lga_id)
 
+                            internalId = createInternalId(pu, pollingUnit.id)
+
+                            
+
                             userAccount = Account()
+                            userAccount.internalId = internalId
                             userAccount.firstname = firstname
                             userAccount.middlename = middlename
                             userAccount.lastname = lastname
@@ -222,6 +230,9 @@ class Onboard(APIView):
                             userAccount.ward = wardObject
                             userAccount.pollingUnit = pollingUnit
                             userAccount.save()
+
+                        else:
+                            pass
 
                     
                     except:

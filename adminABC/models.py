@@ -59,6 +59,7 @@ class Account(models.Model):
     lga = models.ForeignKey(Lga, on_delete=models.CASCADE, default=1)
     ward = models.ForeignKey(Ward, on_delete=models.CASCADE, default=1)
     pollingUnit = models.ForeignKey(PollingUnit, on_delete=models.CASCADE, default=1)
+    internalId = models.CharField(max_length=50, default=None)
     image = models.FileField(default=None)
     password = models.CharField(max_length = 350)
     firstname = models.CharField(max_length = 350,  default='')

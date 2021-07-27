@@ -721,7 +721,8 @@ class FilterByLga(APIView):
                 'pollingUnit': pollingUnit,
                 'senatorialzone': senatorial,
                 'ward': wardName,
-                'gender': admin.gender
+                'gender': admin.gender,
+                'age': admin.age
             }
 
             bucket.append(buffer)
@@ -774,7 +775,8 @@ class FilterByWard(APIView):
                 'pollingUnit': pollingUnit,
                 'senatorialzone': senatorial,
                 'ward': wardName,
-                'gender': admin.gender
+                'gender': admin.gender,
+                'age': admin.age
             }
 
             bucket.append(buffer)
@@ -825,7 +827,8 @@ class FilterByPoll(APIView):
                 'pollingUnit': pollingUnit,
                 'senatorialzone': senatorial,
                 'ward': wardName,
-                'gender': admin.gender
+                'gender': admin.gender,
+                'age': admin.age
             }
 
             bucket.append(buffer)
@@ -878,7 +881,8 @@ class SearchByName(APIView):
                 'pollingUnit': pollingUnit,
                 'senatorialzone': senatorial,
                 'ward': wardName,
-                'gender': admin.gender
+                'gender': admin.gender,
+                'age': admin.age
             }
 
             bucket.append(buffer)

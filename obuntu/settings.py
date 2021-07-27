@@ -167,5 +167,5 @@ USE_TZ = True
 STATIC_ROOT = '/var/cache/obuntu/static/'
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR ,'media')
+MEDIA_ROOT = '/var/cache/obuntu/media/'
 MEDIA_URL = '/media/'

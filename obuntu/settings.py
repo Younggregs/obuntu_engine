@@ -109,7 +109,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'obuntu_db',
         'USER': 'root',
-        'PASSWORD': 'iqtb-psge-nsyo-jbpt-psbg',
+        'PASSWORD': '',
         'HOST':'127.0.0.1',
         'PORT':'3306',
         'OPTIONS': {'charset': 'utf8mb4', 'use_unicode': True},

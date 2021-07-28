@@ -642,7 +642,8 @@ class FetchUser(APIView):
             'senatorialzone': senatorial,
             'ward': wardName,
             'gender': account.gender, 
-            'age': account.age
+            'age': account.age,
+            'internalId': account.internalId
         }
 
         serializer = UserDataSerializer(bucket, many=False)
@@ -693,7 +694,8 @@ class UserView(APIView):
                 'senatorialzone': senatorial,
                 'ward': wardName,
                 'gender': admin.gender,
-                'age': admin.age
+                'age': admin.age,
+                'internalId': admin.internalId
             }
 
             bucket.append(buffer)
@@ -747,7 +749,8 @@ class FilterByLga(APIView):
                 'senatorialzone': senatorial,
                 'ward': wardName,
                 'gender': admin.gender,
-                'age': admin.age
+                'age': admin.age,
+                'internalId': admin.internalId
             }
 
             bucket.append(buffer)
@@ -801,7 +804,8 @@ class FilterByWard(APIView):
                 'senatorialzone': senatorial,
                 'ward': wardName,
                 'gender': admin.gender,
-                'age': admin.age
+                'age': admin.age,
+                'internalId': admin.internalId
             }
 
             bucket.append(buffer)
@@ -853,7 +857,8 @@ class FilterByPoll(APIView):
                 'senatorialzone': senatorial,
                 'ward': wardName,
                 'gender': admin.gender,
-                'age': admin.age
+                'age': admin.age,
+                'internalId': admin.internalId
             }
 
             bucket.append(buffer)
@@ -907,7 +912,8 @@ class SearchByName(APIView):
                 'senatorialzone': senatorial,
                 'ward': wardName,
                 'gender': admin.gender,
-                'age': admin.age
+                'age': admin.age,
+                'internalId': admin.internalId
             }
 
             bucket.append(buffer)

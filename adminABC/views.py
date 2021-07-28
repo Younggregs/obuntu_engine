@@ -177,13 +177,26 @@ def createInternalId(pu, pollingUnit):
 
 
 
+class Unboard(APIView):
+
+    def get(self, request):
+
+        try:
+            Account.objects.all().delete()
+            return Response('Success!')
+        except:
+            pass
+
+        return Response('Failure!')
+
+
 
 class Onboard(APIView):
 
     def get(self, request):
 
-        url = PROJECT_ROOT + '/sheet1.csv'
-        #Account.objects.all().delete()
+        url = PROJECT_ROOT + '/sheet2.csv'
+        Account.objects.all().delete()
         with open(url) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             x = 0

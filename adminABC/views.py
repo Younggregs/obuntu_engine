@@ -195,7 +195,7 @@ class Onboard(APIView):
 
     def get(self, request):
 
-        url = PROJECT_ROOT + '/sheet2.csv'
+        url = PROJECT_ROOT + '/sheet1.csv'
         Account.objects.all().delete()
         with open(url) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
@@ -368,7 +368,7 @@ class Signup(APIView):
 
     def post(self, request):
         
-        if True:
+        try:
             phone = request.POST.get("phone","")
 
             try:
@@ -439,23 +439,24 @@ class Signup(APIView):
             userAccount.lga = lgaObject
             userAccount.ward = wardObject
             userAccount.pollingUnit = pollingUnitObject
-            userAccount.save()
+            # userAccount.save()
 
-            user = User()
-            user.username = userAccount.registrationNumber
-            user.password = password
-            user.name = firstname + ' ' +  middlename + ' ' + lastname
-            user.save()
+            # user = User()
+            # user.username = userAccount.registrationNumber
+            # user.password = password
+            # user.name = firstname + ' ' +  middlename + ' ' + lastname
+            # user.save()
 
-            code = userAccount.registrationNumber
+            # code = userAccount.registrationNumber
+
             success = {
-                'code' : code
+                'code' : 'code'
             }
 
             serializer = SuccessCodeSerializer(success, many = False)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
         error_message = 'Sorry something went wrong, retry'

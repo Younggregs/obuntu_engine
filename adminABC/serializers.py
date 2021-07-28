@@ -49,6 +49,7 @@ class UserDataSerializer(serializers.Serializer):
     ward = serializers.CharField()
     gender = serializers.CharField()
     age = serializers.CharField()
+    internalId = serializers.CharField()
     
 
 

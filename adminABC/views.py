@@ -12,8 +12,8 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.core.mail import EmailMessage, send_mail
 from django.core import serializers
 from django.db.models import Q
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward
-from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, LoginSerializer, UserDataSerializer
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, PollingUnit, Ward, DemoAccount, Post, Comment, Like, PostUpdate
+from .serializers import AccountSerializer, NewAccountSerializer, LgaSerializer, ErrorCheckSerializer, SuccessCodeSerializer, AdminSerializer, UserSerializer, LocationSerializer, WardSerializer, PollingUnitSerializer, LoginSerializer, UserDataSerializer, PostSerializer, CommentSerializer, LikeSerializer, UserSearchSerializer, UpdateSerializer
 
 import pandas as pd
 import os
@@ -59,9 +59,9 @@ def getAccount(request):
 
     if request.user.is_authenticated:
         user = User.objects.get(username = request.user)
-        registrationNumber = user.username
+        internalId = user.username
 
-        account = Account.objects.get(registrationNumber=registrationNumber)
+        account = Account.objects.get(internalId=internalId)
         return account
 
     else:
@@ -181,11 +181,11 @@ class Unboard(APIView):
 
     def get(self, request):
 
-        try:
-            Account.objects.all().delete()
-            return Response('Success!')
-        except:
-            pass
+        # try:
+        #     Account.objects.all().delete()
+        #     return Response('Success!')
+        # except:
+        #     pass
 
         return Response('Failure!')
 
@@ -200,6 +200,7 @@ class Onboard(APIView):
         with open(url) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             x = 0
+            failedRegister = []
             for row in csv_reader:
 
                 p = row[7].lower()
@@ -220,14 +221,12 @@ class Onboard(APIView):
 
                     try:
 
-                        if True:
+                        try:
                             pollingUnit = PollingUnit.objects.get(delimitation = str(pu))
                             wardObject = Ward.objects.get(id = pollingUnit.ward_id)
                             lgaObject = Lga.objects.get(id = wardObject.lga_id)
 
                             internalId = createInternalId(pu, pollingUnit.id)
-
-                            
 
                             userAccount = Account()
                             userAccount.internalId = internalId
@@ -244,8 +243,15 @@ class Onboard(APIView):
                             userAccount.pollingUnit = pollingUnit
                             userAccount.save()
 
-                        else:
-                            pass
+                            # user = User()
+                            # user.username = userAccount.internalId
+                            # user.password = 'password'
+                            # user.name = firstname + ' ' +  middlename + ' ' + lastname
+                            # user.save()
+
+                        except:
+                            
+                            failedRegister.append({'pu': pu})
 
                     
                     except:
@@ -368,7 +374,7 @@ class Signup(APIView):
 
     def post(self, request):
         
-        try:
+        if True:
             phone = request.POST.get("phone","")
 
             try:
@@ -439,24 +445,27 @@ class Signup(APIView):
             userAccount.lga = lgaObject
             userAccount.ward = wardObject
             userAccount.pollingUnit = pollingUnitObject
-            # userAccount.save()
+            internalId = createInternalId(pollingUnitObject.delimitation, pollingUnit)
+            userAccount.internalId = internalId
+            userAccount.save()
 
-            # user = User()
-            # user.username = userAccount.registrationNumber
-            # user.password = password
-            # user.name = firstname + ' ' +  middlename + ' ' + lastname
-            # user.save()
+            user = User()
+            user.username = userAccount.internalId
+            user.password = password
+            user.firstname = firstname
+            user.lastname = lastname
+            user.save()
 
-            # code = userAccount.registrationNumber
+            code = userAccount.internalId
 
             success = {
-                'code' : 'code'
+                'code' : code
             }
 
             serializer = SuccessCodeSerializer(success, many = False)
             return Response(serializer.data)
 
-        except:
+        else:
             pass
 
         error_message = 'Sorry something went wrong, retry'
@@ -495,28 +504,28 @@ class Signin(APIView):
 
             try:
                 account = Account.objects.get(phone = username)
-                registrationNumber = account.registrationNumber
+                registrationNumber = account.internalId
             except:
                 pass
 
             try:
-                account = Account.objects.get(registrationNumber = username)
-                registrationNumber = account.registrationNumber
+                account = Account.objects.get(internalId = username)
+                internalId = account.internalId
             except:
                 pass
 
             
-            if registrationNumber != 1:
+            if internalId != 1:
 
                 try:
-                    User.objects.get(username = registrationNumber)
-                    account = Account.objects.get(registrationNumber = registrationNumber)
+                    User.objects.get(username = internalId)
+                    account = Account.objects.get(internalId = internalId)
                     
-                    status = authenticateLogin(request, registrationNumber, password)
+                    status = authenticateLogin(request, internalId, password)
                     
                     if status : 
 
-                        code = account.registrationNumber
+                        code = account.internalId
                         success = {
                             'code' : code
                         }
@@ -921,4 +930,791 @@ class SearchByName(APIView):
             x = x + 1
 
         serializer = UserDataSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+# Demo account
+
+def getDemoAccount(request):
+
+    if request.user.is_authenticated:
+        user = User.objects.get(username = request.user)
+        registrationNumber = user.username
+
+        account = DemoAccount.objects.get(registrationNumber=registrationNumber)
+        return account
+
+    else:
+        
+        return -1
+
+
+
+
+
+
+class DemoSignup(APIView):
+
+    def get(self, request):
+        pass
+
+    def post(self, request):
+        
+        if True:
+            phone = request.POST.get("phone","")
+
+            try:
+                accountExist = DemoAccount.objects.get(phone=phone)
+
+                error_message = 'Account with this phone number already exist'
+                err = {
+                    'error_message' : error_message
+                }
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+            except:
+                pass
+
+            registrationNumber = request.POST.get("registrationNumber","")
+
+            try:
+                accountExist = DemoAccount.objects.get(registrationNumber=registrationNumber)
+
+                error_message = 'Account with this registration number already exist'
+                err = {
+                    'error_message' : error_message
+                }
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+            except:
+                pass
+
+            # notificationToken = request.POST.get("notificationToken", "")
+            firstname = request.POST.get("firstname","")
+            middlename = request.POST.get("middlename","")
+            lastname = request.POST.get("lastname","")
+            age = request.POST.get("age","")
+            votercard = request.POST.get("votercard","")
+            password = request.POST.get("password","")
+            gender = request.POST.get("gender","")
+            isOldMember = request.POST.get("isOldMember","")
+            registrationNumber = request.POST.get("registrationNumber","")
+            lga = request.POST.get("lga","")
+            ward = request.POST.get("ward", "")
+            pollingUnit = request.POST.get("pollingUnit", "")
+
+            lgaObject = Lga.objects.get(id = lga)
+            wardObject = Ward.objects.get(id = ward)
+            pollingUnitObject = PollingUnit.objects.get(id = pollingUnit)
+
+            raw_password = password
+            password = make_password(password)
+
+            userAccount = DemoAccount()
+            userAccount.firstname = firstname
+            userAccount.middlename = middlename
+            userAccount.lastname = lastname
+            userAccount.age = age
+            userAccount.votercard = votercard
+            userAccount.phone = phone
+            userAccount.gender = gender
+            userAccount.password = password
+            userAccount.isOldMember = isOldMember
+            if isOldMember == 1:
+                userAccount.registrationNumber = registrationNumber
+            else:
+                lName = lgaObject.name
+                n = random.randint(200000,500000)
+                reg = "PL/" + lgaObject.code + "/" + pollingUnit + "/" + str(n)
+                userAccount.registrationNumber = reg.upper()
+
+            userAccount.lga = lgaObject
+            userAccount.ward = wardObject
+            userAccount.pollingUnit = pollingUnitObject
+            internalId = createInternalId(pollingUnitObject.delimitation, pollingUnit)
+            userAccount.internalId = internalId
+            userAccount.save()
+
+            user = User()
+            user.username = userAccount.internalId
+            user.password = password
+            user.name = firstname + ' ' +  middlename + ' ' + lastname
+            user.save()
+
+            code = userAccount.registrationNumber
+
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        else:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class DemoSignin(APIView):
+
+    def get(self,request):
+        pass
+
+    def post(self,request):
+
+        try:
+            username = request.POST.get("username","")
+            password = request.POST.get("password","")
+
+            registrationNumber = 1
+
+            try:
+                account = DemoAccount.objects.get(phone = username)
+                registrationNumber = account.registrationNumber
+            except:
+                pass
+
+            try:
+                account = DemoAccount.objects.get(registrationNumber = username)
+                registrationNumber = account.registrationNumber
+            except:
+                pass
+
+            
+            if registrationNumber != 1:
+
+                try:
+                    User.objects.get(username = registrationNumber)
+                    account = DemoAccount.objects.get(registrationNumber = registrationNumber)
+                    
+                    status = authenticateLogin(request, registrationNumber, password)
+                    
+                    if status : 
+
+                        code = account.registrationNumber
+                        success = {
+                            'code' : code
+                        }
+
+                        serializer = SuccessCodeSerializer(success, many = False)
+                        return Response(serializer.data)
+
+                    else:
+
+                        error_message = 'Oops login details do not match'
+                        err = {
+                            'error_message' : error_message
+                        }
+
+                        serializer = ErrorCheckSerializer( err, many=False)
+                        return Response(serializer.data)
+
+                except:
+                    pass
+
+                error_message = 'Oops login details do not match'
+                err = {
+                    'error_message' : error_message
+                }
+
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+
+
+            else: 
+                error_message = 'Username (phone/registration number) do not exist'
+                err = {
+                    'error_message' : error_message
+                }
+                serializer = ErrorCheckSerializer( err, many=False)
+                return Response(serializer.data)
+
+        
+        except:
+            pass
+    
+        error_message = 'Sorry could not complete process, reload page and try again'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+class PostView(APIView):
+
+    def get(self, request):
+        
+        postList = Post.objects.all()
+
+        bucket = []
+        for post in postList:
+
+            account = DemoAccount.objects.get(id = post.account_id)
+            #updated = PostUpdate.objects.get(post = post.id)
+
+            comments = Comment.objects.filter(post_id = post.id)
+            likes = Like.objects.filter(post_id = post.id)
+
+
+            commentBucket = []
+            for comment in comments:
+
+                commenter = DemoAccount.objects.get(id = comment.account_id)
+
+                buffer = {
+                    'comment_id': comment.id,
+                    'text': comment.text,
+                    'date': comment.date,
+                    'user_id': commenter.id,
+                    'user_name': commenter.name,
+                    'username': commenter.username,
+                    'isVerified': commenter.isVerified,
+                    'user_image': commenter.image
+                }
+
+                commentBucket.append(buffer)
+
+
+            buffer = {
+                'post_id': post.id,
+                'title': post.title,
+                'body': post.body,
+                'image': post.image,
+                'updated': post.date,
+                'date': post.date,
+                'user_id': account.id,
+                'user_name': account.firstname + ' ' + account.middlename + ' ' + account.lastname,
+                'user_image': account.image,
+                'isVerified': account.isVerified,
+                'office': account.office,
+                'comments': commentBucket,
+                'likes': likes
+            }
+
+            bucket.append(buffer)
+
+        
+        serializer = PostSerializer(bucket, many=True)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        
+        if True:
+            # account = getDemoAccount(request)
+            account = DemoAccount.objects.get(id = 2)
+            title = request.POST.get("title","")
+            body = request.POST.get("body","")
+            image = request.FILES.get("image",False)
+
+            post = Post()
+            post.account = account
+            post.title = title
+            if image:
+                post.image = image
+            post.body = body
+            post.save()
+
+            bucket = {
+                'post_id': post.id,
+                'title': post.title,
+                'body': post.body,
+                'image': post.image,
+                'updated': post.date,
+                'date': post.date,
+                'user_id': account.id,
+                'user_name': account.firstname + ' ' + account.middlename + ' ' + account.lastname,
+                'user_image': account.image,
+                'isVerified': account.isVerified,
+                'office': account.office,
+                'comments': [],
+                'likes': []
+            }
+            
+            serializer = PostSerializer(bucket, many=False)
+            return Response(serializer.data)
+
+        else:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class UpdatePost(APIView):
+
+    def get(self, request, id):
+        
+        try:
+            account = getDemoAccount(request)
+            post = Post.objects.get(id = id)
+            post.delete()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+    def post(self, request, id):
+        
+        try:
+            # account = getDemoAccount(request)
+            account = DemoAccount.objects.get(id = 2)
+            title = request.POST.get("title", False)
+            body = request.POST.get("body", False)
+            image = request.FILES.get("image", False)
+
+            post = Post.objects.get(id = id)
+            post.account = account
+            if title:
+                post.title = title
+            if image:
+                post.image = image
+            if body:
+                post.body = body
+            post.save()
+
+            comments = Comment.objects.filter(id = post.id)
+            likes = Like.objects.filter(id = post.id)
+
+            register = {
+                'post_id': post.id,
+                'title': post.title,
+                'body': post.body,
+                'image': post.image,
+                'updated': post.date,
+                'date': post.date,
+                'user_id': account.id,
+                'user_name': account.firstname + ' ' + account.middlename + ' ' + account.lastname,
+                'user_image': account.image,
+                'isVerified': account.isVerified,
+                'office': account.office,
+                'comments': comments,
+                'likes': likes
+            }
+
+            serializer = PostSerializer(register, many=False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+class LikePost(APIView):
+
+    def get(self, request, id):
+        
+        try:
+            # account = getDemoAccount(request)
+            account = DemoAccount.objects.get(id = 2)
+            post = Post.objects.get(id = id)
+            try:
+                like = Like.objects.get(post_id = id, account=account)
+                like.delete()
+
+                code = 7
+                success = {
+                    'code' : code
+                }
+
+                serializer = SuccessCodeSerializer(success, many = False)
+                return Response(serializer.data)
+
+            except:
+                pass
+
+            like = Like()
+            like.account = account
+            like.post = post
+            like.save()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+        
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+    
+    def post(self, request, id):
+
+        try:
+            likeList = Like.objects.filter(id = id).count()
+
+            success = {
+                'code' : likeList
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+        error_message = 'Could not fetch likes'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+
+
+class CommentView(APIView):
+    
+    def get(self, request, id):
+        
+        try:
+            commentList = Comment.objects.filter(post = id)
+
+            bucket = []
+            for comment in commentList:
+
+                account = DemoAccount.objects.get(id = comment.account_id)
+                #updated = PostUpdate.objects.get(post = post.id)
+
+                buffer = {
+                    'comment_id': comment.id,
+                    'text': comment.text,
+                    'date': comment.date,
+                    'user_id': account.id,
+                    'user_name': account.firstname + ' ' + account.middlename + ' ' + account.lastname,
+                    'username': account.username,
+                    'isVerified': account.isVerified,
+                    'user_image': account.image
+                }
+
+                bucket.append(buffer)
+
+        
+            serializer = CommentSerializer(bucket, many=True)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+
+        error_message = 'Sorry could not fetch comments'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+        
+
+    
+    def post(self, request, id):
+        
+        if True:
+            # account = getDemoAccount(request)
+            account = DemoAccount.objects.get(id = 2)
+            post = Post.objects.get(id = id)
+
+            text = request.POST.get("text","")
+
+            comment = Comment()
+            comment.account = account
+            comment.post = post
+            comment.text = text
+            comment.save()
+
+            commentList = Comment.objects.filter(post = id)
+
+            bucket = []
+            for comment in commentList:
+
+                commenter = DemoAccount.objects.get(id = comment.account_id)
+                #updated = PostUpdate.objects.get(post = post.id)
+
+                buffer = {
+                    'comment_id': comment.id,
+                    'text': comment.text,
+                    'date': comment.date,
+                    'user_id': commenter.id,
+                    'user_name': commenter.firstname + ' ' + commenter.middlename + ' ' + commenter.lastname,
+                    'office': commenter.office,
+                    'isVerified': commenter.isVerified,
+                    'user_image': commenter.image
+                }
+
+                bucket.append(buffer)
+
+        
+            serializer = CommentSerializer(bucket, many=True)
+            return Response(serializer.data)
+
+        else:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+
+
+
+class RemoveComment(APIView):
+
+    def get(self, request, id):
+        
+        try: 
+            # account = getDemoAccount(request)
+            account = DemoAccount.objects.get(id = 2)
+            comment = Comment.objects.get(id = id, account=account)
+            comment.delete()
+
+            code = 11
+            success = {
+                'code' : code
+            }
+
+            serializer = SuccessCodeSerializer(success, many = False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+        
+
+    def post(self, request, id):
+        pass
+
+
+
+
+
+class DemoUserSearch(APIView):
+
+    def get(self, request):
+        
+        try:
+            # account = getDemoAccount(request)
+            account = DemoAccount.objects.get(id = 2)
+            userList = DemoAccount.objects.exclude(id = account.id)
+
+            bucket = []
+            for user in userList:
+                
+                buffer = {
+                    'id': user.id,
+                    'name': user.firstname + ' ' + user.middlename + ' ' + user.lastname,
+                    'office': user.office,
+                    'image': user.image,
+                    'isVerified': user.isVerified
+                }
+
+                bucket.append(buffer)
+
+            serializer = UserSearchSerializer(bucket, many=True)
+            return Response(serializer.data)
+
+
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+    def post(self, request):
+        pass
+
+
+
+
+
+
+class DemoUpdateAccount(APIView):
+
+    def get(self, request):
+        
+        try:
+            # userAccount = getDemoAccount(request)
+            userAccount = DemoAccount.objects.get(id = 2)
+
+            lgaObject = Lga.objects.get(id = userAccount.lga_id)
+            pollingUnitObject = PollingUnit.objects.get(id = userAccount.pollingUnit_id)
+
+            buffer = {
+                'lga': lgaObject.name,
+                'pollingUnit': pollingUnitObject.name,
+                'firstname': userAccount.firstname,
+                'middlename': userAccount.middlename,
+                'lastname': userAccount.lastname,
+                'office': userAccount.office,
+                'image': userAccount.image,
+                'gender': userAccount.gender,
+            }
+
+            serializer = UpdateSerializer(buffer, many=False)
+            return Response(serializer.data)
+        
+        except:
+            pass
+
+            
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
+        return Response(serializer.data)
+
+
+
+    def post(self, request):
+        
+        try:
+            firstname = request.POST.get("firstname", False)
+            middlename = request.POST.get("middlename", False)
+            lastname = request.POST.get("lastname", False)
+            image = request.FILES.get("image", False)
+            gender = request.POST.get("gender", False)
+            
+            # userAccount = getDemoAccount(request)
+            userAccount = DemoAccount.objects.get(id = 2)
+            if firstname:
+                userAccount.firstname = firstname
+            if middlename:
+                userAccount.middlename = middlename
+            if lastname:
+                userAccount.lastname = lastname
+            if image:
+                userAccount.image = image
+            userAccount.save()
+
+            lgaObject = Lga.objects.get(id = userAccount.lga_id)
+            pollingUnitObject = PollingUnit.objects.get(id = userAccount.pollingUnit_id)
+
+            buffer = {
+                'lga': lgaObject.name,
+                'pollingUnit': pollingUnitObject.name,
+                'firstname': userAccount.firstname,
+                'middlename': userAccount.middlename,
+                'lastname': userAccount.lastname,
+                'office': userAccount.office,
+                'image': userAccount.image,
+                'gender': userAccount.gender,
+            }
+
+            serializer = UpdateSerializer(buffer, many=False)
+            return Response(serializer.data)
+
+        except:
+            pass
+
+        error_message = 'Sorry something went wrong, retry'
+        err = {
+            'error_message' : error_message
+        }
+        serializer = ErrorCheckSerializer( err, many=False)
         return Response(serializer.data)

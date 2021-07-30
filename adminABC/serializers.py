@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Account, Lga, Ward, PollingUnit
+from .models import Account, Lga, Ward, PollingUnit, Like
 
 
 class AccountSerializer(serializers.ModelSerializer):
@@ -122,9 +122,57 @@ class CommentSerializer(serializers.Serializer):
     comment_id = serializers.IntegerField()
     user_id = serializers.IntegerField()
     user_name = serializers.CharField()
-    username = serializers.CharField()
+    office = serializers.CharField()
     isVerified = serializers.BooleanField()
     user_image = serializers.CharField()
     text = serializers.CharField()
     date = serializers.CharField()
 
+
+
+class LikeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Like
+        fields = ['account_id']
+
+
+
+class PostSerializer(serializers.Serializer):
+    post_id = serializers.IntegerField()
+    user_id = serializers.IntegerField()
+    user_name = serializers.CharField()
+    user_image = serializers.CharField()
+    isVerified = serializers.BooleanField()
+    office = serializers.CharField()
+    title = serializers.CharField()
+    comments = CommentSerializer(many=True)
+    likes = LikeSerializer(many=True)
+    body = serializers.CharField()
+    image = serializers.CharField()
+    updated = serializers.CharField()
+    date = serializers.CharField()
+
+
+
+
+class UserSearchSerializer(serializers.Serializer):
+
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    office = serializers.CharField()
+    image = serializers.CharField()
+    isVerified = serializers.BooleanField()
+
+
+
+
+class UpdateSerializer(serializers.Serializer):
+    lga = serializers.CharField()
+    pollingUnit = serializers.CharField()
+    firstname = serializers.CharField()
+    middlename = serializers.CharField()
+    lastname = serializers.CharField()
+    office = serializers.CharField()
+    image = serializers.CharField()
+    gender = serializers.CharField()

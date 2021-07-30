@@ -59,4 +59,34 @@ urlpatterns = [
     #apc/superuser
     url(r'^superuser/$',views.IsSuperUser.as_view(), name = 'is-superuser'),
 
+
+
+    # Demo urls
+    #apc/demo_signup
+    url(r'^demo_signup/$',views.DemoSignup.as_view(), name = 'demo-signup'),
+
+    #apc/signin
+    url(r'^demo_signin/$',views.DemoSignin.as_view(), name = 'demo-signin'),
+
+    #obuntu/post
+    url(r'^post/$',views.PostView.as_view(), name = 'post-view'),
+
+    #obuntu/update_post
+    url(r'^update_post/(?P<id>[0-9]+)/$',views.UpdatePost.as_view(), name = 'update-post'),
+
+    #obuntu/like_post
+    url(r'^like_post/(?P<id>[0-9]+)/$',views.LikePost.as_view(), name = 'like-post'),
+
+    #obuntu/comment
+    url(r'^comment/(?P<id>[0-9]+)/$',views.CommentView.as_view(), name = 'comment-view'),
+
+    #obuntu/remove_comment
+    url(r'^remove_comment/(?P<id>[0-9]+)/$',views.RemoveComment.as_view(), name = 'remove-comment'),
+
+    #obuntu/update_account
+    url(r'^demo_update_account/$',views.DemoUpdateAccount.as_view(), name = 'demo-update-account'),
+
+    #obuntu/user_search
+    url(r'^demo_user_search/$',views.DemoUserSearch.as_view(), name = 'demo-user-search'),
+
 ]

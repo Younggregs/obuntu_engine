@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, Ward, PollingUnit
+from .models import Account, Lga, SenatorialZone, AdminUser, SuperUserAdmin, Ward, PollingUnit, DemoAccount, Post, Comment
 
 # Register your models here.
 
@@ -21,3 +21,11 @@ admin.site.register(AdminUser)
 admin.site.register(SuperUserAdmin)
 admin.site.register(Ward, WardSearch)
 admin.site.register(PollingUnit, PollSearch)
+
+#Demo
+class DemoAccountSearch(admin.ModelAdmin):
+    search_fields = ['firstname', 'phone', 'firstname', 'middlename', "lastname"]
+
+admin.site.register(DemoAccount, DemoAccountSearch)
+admin.site.register(Post)
+admin.site.register(Comment)

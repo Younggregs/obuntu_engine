@@ -1079,8 +1079,8 @@ class UpdatePost(APIView):
                 post.body = body
             post.save()
 
-            comments = Comment.objects.filter(id = post.id).count()
-            likes = Like.objects.filter(id = post.id).count()
+            comments = Comment.objects.filter(id = post.id)
+            likes = Like.objects.filter(id = post.id)
 
             register = {
                 'post_id': post.id,

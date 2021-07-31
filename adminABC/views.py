@@ -163,7 +163,9 @@ def createInternalId(pu, pollingUnit):
     while status:
 
         count = Account.objects.filter(pollingUnit = pollingUnit).count()
-        internalId = pu + '/' + str(count + x)
+        puBuffer = pu.split('/')
+        pu = puBuffer[0] + '-' + puBuffer[1] + '-' + puBuffer[2] + '-' + puBuffer[3]
+        internalId = pu + '-' + str(count + x)
 
         try: 
             account = Account.objects.get(internalId = internalId)
@@ -181,11 +183,11 @@ class Unboard(APIView):
 
     def get(self, request):
 
-        # try:
-        #     Account.objects.all().delete()
-        #     return Response('Success!')
-        # except:
-        #     pass
+        try:
+            Account.objects.all().delete()
+            return Response('Success!')
+        except:
+            pass
 
         return Response('Failure!')
 
@@ -196,7 +198,7 @@ class Onboard(APIView):
     def get(self, request):
 
         url = PROJECT_ROOT + '/sheet1.csv'
-        Account.objects.all().delete()
+        # Account.objects.all().delete()
         with open(url) as csv_file:
             csv_reader = csv.reader(csv_file, delimiter=',')
             x = 0

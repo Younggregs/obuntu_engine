@@ -183,11 +183,11 @@ class Unboard(APIView):
 
     def get(self, request):
 
-        try:
-            Account.objects.all().delete()
-            return Response('Success!')
-        except:
-            pass
+        # try:
+        #     Account.objects.all().delete()
+        #     return Response('Success!')
+        # except:
+        #     pass
 
         return Response('Failure!')
 

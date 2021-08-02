@@ -179,6 +179,29 @@ def createInternalId(pu, pollingUnit):
 
 
 
+def createInternalIdDemo(pu, pollingUnit):
+
+    status = True
+    x = 1
+    while status:
+
+        count = Account.objects.filter(pollingUnit = pollingUnit).count()
+        # puBuffer = pu.split('/')
+        # pu = puBuffer[0] + '-' + puBuffer[1] + '-' + puBuffer[2] + '-' + puBuffer[3]
+        internalId = pu + '-' + str(count + x)
+
+        try: 
+            account = DemoAccount.objects.get(internalId = internalId)
+        except:
+            status = False
+
+        x = x + 1
+
+    return internalId
+
+
+
+
 class Unboard(APIView):
 
     def get(self, request):
@@ -558,7 +581,7 @@ class Signin(APIView):
 
 
             else: 
-                error_message = 'Username (phone/registration number) do not exist'
+                error_message = 'Registration number/ Phone do not exist'
                 err = {
                     'error_message' : error_message
                 }
@@ -968,7 +991,7 @@ class DemoSignup(APIView):
 
     def post(self, request):
         
-        if True:
+        try:
             phone = request.POST.get("phone","")
 
             try:
@@ -1039,7 +1062,7 @@ class DemoSignup(APIView):
             userAccount.lga = lgaObject
             userAccount.ward = wardObject
             userAccount.pollingUnit = pollingUnitObject
-            internalId = createInternalId(pollingUnitObject.delimitation, pollingUnit)
+            internalId = createInternalIdDemo(pollingUnitObject.delimitation, pollingUnit)
             userAccount.internalId = internalId
             userAccount.save()
 
@@ -1049,7 +1072,7 @@ class DemoSignup(APIView):
             user.name = firstname + ' ' +  middlename + ' ' + lastname
             user.save()
 
-            code = userAccount.registrationNumber
+            code = userAccount.internalId
 
             success = {
                 'code' : code
@@ -1058,7 +1081,7 @@ class DemoSignup(APIView):
             serializer = SuccessCodeSerializer(success, many = False)
             return Response(serializer.data)
 
-        else:
+        except:
             pass
 
         error_message = 'Sorry something went wrong, retry'
@@ -1097,28 +1120,28 @@ class DemoSignin(APIView):
 
             try:
                 account = DemoAccount.objects.get(phone = username)
-                registrationNumber = account.registrationNumber
+                internalId = account.registrationNumber
             except:
                 pass
 
             try:
-                account = DemoAccount.objects.get(registrationNumber = username)
-                registrationNumber = account.registrationNumber
+                account = DemoAccount.objects.get(internalId = username)
+                internalId = account.internalId
             except:
                 pass
 
             
-            if registrationNumber != 1:
+            if internalId != 1:
 
                 try:
-                    User.objects.get(username = registrationNumber)
-                    account = DemoAccount.objects.get(registrationNumber = registrationNumber)
+                    User.objects.get(username = internalId)
+                    account = DemoAccount.objects.get(internalId = internalId)
                     
-                    status = authenticateLogin(request, registrationNumber, password)
+                    status = authenticateLogin(request, internalId, password)
                     
                     if status : 
 
-                        code = account.registrationNumber
+                        code = account.internalId
                         success = {
                             'code' : code
                         }
@@ -1147,9 +1170,8 @@ class DemoSignin(APIView):
                 serializer = ErrorCheckSerializer( err, many=False)
                 return Response(serializer.data)
 
-
             else: 
-                error_message = 'Username (phone/registration number) do not exist'
+                error_message = 'Registration/Phone number do not exist'
                 err = {
                     'error_message' : error_message
                 }
@@ -1234,7 +1256,7 @@ class PostView(APIView):
         
         if True:
             # account = getDemoAccount(request)
-            account = DemoAccount.objects.get(id = 2)
+            account = DemoAccount.objects.get(id = 8)
             title = request.POST.get("title","")
             body = request.POST.get("body","")
             image = request.FILES.get("image",False)
@@ -1324,7 +1346,7 @@ class UpdatePost(APIView):
         
         try:
             # account = getDemoAccount(request)
-            account = DemoAccount.objects.get(id = 2)
+            account = DemoAccount.objects.get(id = 8)
             title = request.POST.get("title", False)
             body = request.POST.get("body", False)
             image = request.FILES.get("image", False)
@@ -1383,7 +1405,7 @@ class LikePost(APIView):
         
         try:
             # account = getDemoAccount(request)
-            account = DemoAccount.objects.get(id = 2)
+            account = DemoAccount.objects.get(id = 8)
             post = Post.objects.get(id = id)
             try:
                 like = Like.objects.get(post_id = id, account=account)
@@ -1501,7 +1523,7 @@ class CommentView(APIView):
         
         if True:
             # account = getDemoAccount(request)
-            account = DemoAccount.objects.get(id = 2)
+            account = DemoAccount.objects.get(id = 8)
             post = Post.objects.get(id = id)
 
             text = request.POST.get("text","")
@@ -1559,7 +1581,7 @@ class RemoveComment(APIView):
         
         try: 
             # account = getDemoAccount(request)
-            account = DemoAccount.objects.get(id = 2)
+            account = DemoAccount.objects.get(id = 8)
             comment = Comment.objects.get(id = id, account=account)
             comment.delete()
 
@@ -1594,9 +1616,9 @@ class DemoUserSearch(APIView):
 
     def get(self, request):
         
-        try:
+        if True:
             # account = getDemoAccount(request)
-            account = DemoAccount.objects.get(id = 2)
+            account = DemoAccount.objects.get(id = 8)
             userList = DemoAccount.objects.exclude(id = account.id)
 
             bucket = []
@@ -1616,7 +1638,7 @@ class DemoUserSearch(APIView):
             return Response(serializer.data)
 
 
-        except:
+        else:
             pass
 
         error_message = 'Sorry something went wrong, retry'
@@ -1641,7 +1663,7 @@ class DemoUpdateAccount(APIView):
         
         try:
             # userAccount = getDemoAccount(request)
-            userAccount = DemoAccount.objects.get(id = 2)
+            userAccount = DemoAccount.objects.get(id = 8)
 
             lgaObject = Lga.objects.get(id = userAccount.lga_id)
             pollingUnitObject = PollingUnit.objects.get(id = userAccount.pollingUnit_id)
@@ -1683,7 +1705,7 @@ class DemoUpdateAccount(APIView):
             gender = request.POST.get("gender", False)
             
             # userAccount = getDemoAccount(request)
-            userAccount = DemoAccount.objects.get(id = 2)
+            userAccount = DemoAccount.objects.get(id = 8)
             if firstname:
                 userAccount.firstname = firstname
             if middlename:

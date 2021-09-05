@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^onboard/$',views.Onboard.as_view(), name = 'onboard'),
 
     #apc/unboard
-    url(r'^unboard/$',views.Unboard.as_view(), name = 'onboard'),
+    url(r'^unboard/$',views.Unboard.as_view(), name = 'unboard'),
 
     #apc/membercount
     url(r'^membercount/$',views.MemberCountView.as_view(), name = 'member-count'),
